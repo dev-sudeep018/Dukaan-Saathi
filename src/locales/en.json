@@ -1,0 +1,203 @@
+{
+  "nav": {
+    "howItWorks": "How it works",
+    "liveDemo": "Live Demo",
+    "impact": "Impact",
+    "team": "Team",
+    "seeItLive": "See it live",
+    "dashboard": "Dashboard",
+    "simulator": "Try on WhatsApp",
+    "login": "Login",
+    "logout": "Logout"
+  },
+  "hero": {
+    "badge": "🛒 Built for India's 12M+ kirana shops",
+    "titleA": "Your shop already runs on your voice.",
+    "titleB": " Now your business does too.",
+    "subhead": "No app to learn. No forms to fill. Just talk, text, or snap a photo — Dukaan Saathi handles the sales, inventory, and ledger for you.",
+    "ctaPrimary": "See it work live",
+    "ctaSecondary": "How it works",
+    "langNote": "Works in <b>English, Hindi & Telugu</b> — speak the way you already talk to customers."
+  },
+  "problem": {
+    "eyebrow": "Every \"easy\" app still asks you to change how you work",
+    "heading": "Digital tools keep failing the corner shop — for very human reasons.",
+    "cards": {
+      "time": { "title": "No time", "body": "The shop is full at 8am. Nobody is going to stop and type entries into a form during the morning rush." },
+      "tech": { "title": "Low tech comfort", "body": "WhatsApp voice notes? Yes, daily. Navigating menus, dashboards and settings? That's a different world." },
+      "learn": { "title": "Learning curve", "body": "Every 'simple' billing app still needs a weekend of learning. Most owners quit by day three." },
+      "cost": { "title": "Perceived cost", "body": "₹500/month for software feels like a luxury when the pen-and-notebook has worked for 20 years." },
+      "habit": { "title": "Existing habits", "body": "The bahi-khata (ledger) and the customer's udhaar page are muscle memory. Change is friction." }
+    },
+    "closingTitle": "So we stopped asking shopkeepers to change.",
+    "closingBody": "Dukaan Saathi meets them exactly where they already are: their voice, their WhatsApp, and their notebook."
+  },
+  "how": {
+    "eyebrow": "How it works",
+    "heading": "Three ways in. Zero of them feel like software.",
+    "voice": { "label": "🎙️ Just Speak", "heading": "Speak a sale the way you'd tell a helper.", "body": "Talk in Hindi, Telugu or English. Dukaan Saathi transcribes it, understands item, quantity, price and party — and files it instantly.", "example": "\"Sugar do kilo, assi rupaye, cash\"" },
+    "photo": { "label": "📸 Just Snap", "heading": "Snap your notebook. It reads your handwriting.", "body": "Photograph a page of your bahi-khata. Our OCR reads each handwritten line and turns the whole day into clean, structured entries.", "example": "One photo → a full day of udhaar, digitised" },
+    "text": { "label": "💬 Just Text", "heading": "Ask your shop anything, on WhatsApp.", "body": "No dashboard to open. Message a plain question and get a plain answer — today's profit, who owes you, what's running low.", "example": "\"Aaj ka profit kitna hua?\"" }
+  },
+  "demo": {
+    "eyebrow": "The live demo",
+    "heading": "Don't take our word for it. Talk to the shop.",
+    "sub": "This is a working demo connected to a real backend — tap any question and watch Dukaan Saathi reply the way it would on a real WhatsApp.",
+    "tapToTry": "Tap to try",
+    "inputPlaceholder": "Or just speak — voice works too…",
+    "reset": "Reset",
+    "openFull": "Open the full WhatsApp simulator",
+    "prompts": {
+      "sale": "Log a sale",
+      "stock": "What's running low?",
+      "profit": "Today's profit?",
+      "due": "Who owes me money?"
+    }
+  },
+  "loop": {
+    "eyebrow": "The magic loop",
+    "heading": "One habit in. A running business out.",
+    "steps": {
+      "in": { "title": "Speak · Snap · Text", "body": "The owner talks, sends a WhatsApp, or photographs the notebook." },
+      "ai": { "title": "AI Parsing Engine", "body": "Understands item, quantity, price, party & intent — in Hindi, Telugu or English." },
+      "db": { "title": "Ledger + Inventory", "body": "Sales, stock and udhaar update themselves, instantly and correctly." },
+      "out": { "title": "Plain-language Answer", "body": "A clear reply comes back: profit, dues, low stock — no dashboard needed." }
+    },
+    "footnote": "The loop closes in <b>under 3 seconds</b> — fast enough to use mid-sale, without ever putting the pen down for long."
+  },
+  "impact": {
+    "eyebrow": "The opportunity",
+    "heading": "Built for the shop that was never invited to \"digital India.\"",
+    "stats": {
+      "shops": { "label": "unorganised retail shops in India", "sub": "the vast majority still on pen & paper" },
+      "training": { "label": "of training required", "sub": "if you can send a voice note, you can run it" },
+      "log": { "label": "to log a single sale", "sub": "fast enough to use mid-rush" },
+      "voice": { "label": "of shop tasks by voice alone", "sub": "the dashboard becomes optional" }
+    }
+  },
+  "compare": {
+    "eyebrow": "Why not another ERP",
+    "heading": "We're not another dashboard. We're the end of dashboards.",
+    "mine": "🛒 Dukaan Saathi",
+    "theirs": "Traditional ERP / billing apps",
+    "yes": "Yes",
+    "no": "No",
+    "rows": {
+      "learning": ["Learning curve", "None — speak or snap", "Days of training"],
+      "interface": ["Primary interface", "Voice / WhatsApp / photo", "Forms & dashboards"],
+      "literacy": "Works for semi-literate owners",
+      "language": "Hindi / Telugu native",
+      "notebook": "Reads a handwritten notebook",
+      "computer": "Needs a computer",
+      "setup": ["Setup time", "Minutes", "Weeks / consultants"],
+      "market": "Built for unorganised retail"
+    },
+    "why1Q": "Why voice/WhatsApp-first, not a full ERP?",
+    "why1A": "English, typing-first billing apps already exist — and they don't get used. The barrier was never features; it was the interface. Meeting owners in their own voice and language is the product.",
+    "why2Q": "Why we don't compete with SAP / Oracle",
+    "why2A": "Enterprise ERPs serve organised chains with staff and computers. We serve the 12M+ single-owner shops they were never designed for. Different user, different interface, different market entirely."
+  },
+  "dashToggle": {
+    "prompt": "Voice is the point — but the data is all there if you ever want to look.",
+    "show": "Prefer a screen? See the optional dashboard",
+    "hide": "Hide the optional dashboard",
+    "openReal": "Open my real dashboard",
+    "note": "Read-only preview · a secondary view, never a requirement.",
+    "profit": "Today's profit",
+    "low": "Low stock",
+    "dues": "Udhaar pending"
+  },
+  "team": {
+    "eyebrow": "Try it yourself",
+    "heading": "The best way to understand Dukaan Saathi is to talk to it.",
+    "sub": "Open the WhatsApp simulator and run a few questions — it's the exact experience a shop owner gets on day one.",
+    "tryDemo": "Try the live demo",
+    "viewSubmission": "View submission",
+    "builtBy": "Built by"
+  },
+  "footer": {
+    "tagline": "The shopkeeper's AI saathi.",
+    "submission": "Hackathon submission · 2026",
+    "disclaimer": "Built with React, Tailwind, Express & Claude. Voice by Sarvam AI, WhatsApp by Twilio."
+  },
+  "login": {
+    "title": "Shop login",
+    "subtitle": "Sign in to see your live shop dashboard.",
+    "number": "WhatsApp number",
+    "numberHint": "The number you use with Dukaan Saathi (with country code)",
+    "pin": "PIN",
+    "shopName": "Shop name",
+    "loginBtn": "Log in",
+    "registerBtn": "Create my shop",
+    "toRegister": "New here? Register your shop",
+    "toLogin": "Already registered? Log in",
+    "langLabel": "Preferred language",
+    "loggingIn": "Signing in…",
+    "creating": "Creating…"
+  },
+  "dashboard": {
+    "title": "Shop dashboard",
+    "today": "Today",
+    "moneyToday": "Money received today",
+    "profitToday": "Today's profit",
+    "orders": "Orders today",
+    "revenue": "Sales today",
+    "salesFeed": "Recent sales",
+    "inventory": "Inventory",
+    "productsSold": "Sold today",
+    "dues": "Customers & udhaar",
+    "trend": "Last 7 days",
+    "lowStockTag": "low",
+    "cash": "cash",
+    "udhaar": "udhaar",
+    "outstanding": "Outstanding",
+    "collect": "Collect",
+    "noSales": "No sales yet today. Send a WhatsApp to log your first one!",
+    "noDues": "No udhaar pending — all clear! 🎉",
+    "noStock": "No products yet. They appear as you log sales.",
+    "inStock": "in stock",
+    "item": "Item",
+    "qty": "Qty",
+    "amount": "Amount",
+    "customer": "Customer",
+    "time": "Time",
+    "refresh": "Refresh",
+    "collectPrompt": "Amount received from {{name}}?",
+    "profitChart": "Profit",
+    "revenueChart": "Sales",
+    "netProfitToday": "Net profit today",
+    "grossProfit": "Gross",
+    "expensesToday": "Expenses today",
+    "addExpense": "Add expense",
+    "expenseCatPrompt": "What was the expense for? (e.g. rent, transport, tea)",
+    "expenseAmtPrompt": "Amount spent on {{category}}?",
+    "profitByItem": "Profit by item",
+    "bestSeller": "is today's best seller",
+    "mostProfit": "Most profit",
+    "noExpenses": "No expenses recorded today."
+  },
+  "sim": {
+    "title": "WhatsApp Simulator",
+    "subtitle": "This talks to the real Dukaan Saathi backend. Everything you log here shows up on the dashboard.",
+    "online": "online",
+    "greeting": "👋 Namaste! I'm Dukaan Saathi. Type or record a message — try a sale, an udhaar, or ask for today's profit. English, Hindi or Telugu all work.",
+    "typePlaceholder": "Type a message…",
+    "send": "Send",
+    "record": "Record",
+    "stop": "Stop",
+    "transcribing": "transcribing…",
+    "voiceHint": "Tap the mic to send a voice note (needs Sarvam key)",
+    "youSaid": "You said",
+    "numberLabel": "Simulated number",
+    "samples": {
+      "sale": "2 kg rice 100 rupees cash",
+      "udhaar": "Ramesh 3 kg sugar 150 udhaar",
+      "profit": "aaj ka profit kitna hua",
+      "money": "kitne paise aaye aaj",
+      "dues": "kaun kaun ka udhaar baaki hai",
+      "stock": "kya kya khatam ho raha hai"
+    }
+  },
+  "lang": { "en": "English", "hi": "हिंदी", "te": "తెలుగు" },
+  "common": { "loading": "Loading…", "error": "Something went wrong.", "backHome": "Back to home" }
+}

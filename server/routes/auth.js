@@ -1,0 +1,57 @@
+import { Router } from "express";
+import { db, getOrCreateShop } from "../db.js";
+import { hashPin, verifyPin, issueToken } from "../auth.js";
+
+export const authRouter = Router();
+
+const cleanNumber = (n) => (n || "").toString().replace(/[^\d+]/g, "");
+
+/* Register (or claim) a shop: set its name + PIN for dashboard login.
+   The WhatsApp number is the identity — one shop per number. */
+authRouter.post("/register", (req, res) => {
+  const { whatsapp_number, name, pin, lang } = req.body || {};
+  const number = cleanNumber(whatsapp_number);
+  if (!number || !pin) {
+    return res.status(400).json({ error: "WhatsApp number and PIN are required" });
+  }
+  if (String(pin).length < 4) {
+    return res.status(400).json({ error: "PIN must be at least 4 digits" });
+  }
+
+  const shop = getOrCreateShop(number, name || "My Shop");
+  if (shop.pin_hash) {
+    return res
+      .status(409)
+      .json({ error: "This number is already registered. Please log in." });
+  }
+
+  db.prepare("UPDATE shops SET name = ?, pin_hash = ?, lang_pref = ? WHERE id = ?").run(
+    name || shop.name,
+    hashPin(pin),
+    lang || "en",
+    shop.id,
+  );
+  const updated = db.prepare("SELECT * FROM shops WHERE id = ?").get(shop.id);
+  return res.json({ token: issueToken(updated), shop: publicShop(updated) });
+});
+
+authRouter.post("/login", (req, res) => {
+  const { whatsapp_number, pin } = req.body || {};
+  const number = cleanNumber(whatsapp_number);
+  const shop = db
+    .prepare("SELECT * FROM shops WHERE whatsapp_number = ?")
+    .get(number);
+  if (!shop || !shop.pin_hash || !verifyPin(pin, shop.pin_hash)) {
+    return res.status(401).json({ error: "Wrong number or PIN" });
+  }
+  return res.json({ token: issueToken(shop), shop: publicShop(shop) });
+});
+
+function publicShop(shop) {
+  return {
+    id: shop.id,
+    name: shop.name,
+    whatsapp_number: shop.whatsapp_number,
+    lang_pref: shop.lang_pref,
+  };
+}
