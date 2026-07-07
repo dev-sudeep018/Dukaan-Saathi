@@ -39,12 +39,15 @@ export default function Nav() {
 
         <div className="hidden items-center gap-7 md:flex">
           {LINKS.map((l) => (
-            <a 
-              key={l.href} 
-              href={l.href} 
+            <a
+              key={l.href}
+              href={l.href}
               onClick={(e) => {
-                e.preventDefault();
-                document.querySelector(l.href)?.scrollIntoView({ behavior: "smooth" });
+                const target = document.querySelector(l.href);
+                if (target) {
+                  e.preventDefault();
+                  target.scrollIntoView({ behavior: "smooth" });
+                }
               }}
               className="font-sans text-sm font-medium text-ink opacity-70 transition-opacity hover:opacity-100 hover:text-terracotta"
             >
@@ -70,14 +73,17 @@ export default function Nav() {
         <div className="border-t border-shopfront/10 bg-paper px-5 pb-4 md:hidden">
           <div className="flex flex-col gap-1 pt-2">
             {LINKS.map((l) => (
-              <a 
-                key={l.href} 
-                href={l.href} 
+              <a
+                key={l.href}
+                href={l.href}
                 onClick={(e) => {
-                  e.preventDefault();
-                  setOpen(false);
-                  setTimeout(() => document.querySelector(l.href)?.scrollIntoView({ behavior: "smooth" }), 50);
-                }} 
+                  const target = document.querySelector(l.href);
+                  if (target) {
+                    e.preventDefault();
+                    setOpen(false);
+                    setTimeout(() => target.scrollIntoView({ behavior: "smooth" }), 50);
+                  }
+                }}
                 className="rounded-lg px-2 py-2.5 font-sans text-sm font-medium text-ink opacity-80"
               >
                 {l.label}
