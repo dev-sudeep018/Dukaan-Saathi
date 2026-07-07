@@ -3,7 +3,7 @@ import cors from "cors";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 import { config, flags, logStartupFlags } from "./config.js";
-import "./db.js"; // initialize schema on boot
+import { dbReady } from "./db.js"; // schema init (awaited before serving)
 import { authRouter } from "./routes/auth.js";
 import { dataRouter } from "./routes/data.js";
 import { simulateRouter } from "./routes/simulate.js";
@@ -34,8 +34,16 @@ app.get(/^\/(?!api\/|webhooks\/).*/, (_req, res) =>
   res.sendFile(join(distDir, "index.html")),
 );
 
-app.listen(config.port, () => {
-  console.log(`\n🟢 Dukaan Saathi backend on http://localhost:${config.port}`);
-  logStartupFlags();
-  console.log("");
-});
+// Ensure the schema exists before we start accepting requests.
+dbReady
+  .then(() => {
+    app.listen(config.port, () => {
+      console.log(`\n🟢 Dukaan Saathi backend on http://localhost:${config.port}`);
+      logStartupFlags();
+      console.log("");
+    });
+  })
+  .catch((err) => {
+    console.error("❌ Database init failed:", err.message);
+    process.exit(1);
+  });

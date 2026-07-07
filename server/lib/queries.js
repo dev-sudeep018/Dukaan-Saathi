@@ -4,8 +4,8 @@ import { db, normalize } from "../db.js";
    local time so "today" matches the shopkeeper's day. */
 const TODAY = "date(created_at, 'localtime') = date('now', 'localtime')";
 
-export function todaySummary(shopId) {
-  const sales = db
+export async function todaySummary(shopId) {
+  const sales = await db
     .prepare(
       `SELECT COALESCE(SUM(amount),0) AS revenue,
               COALESCE(SUM(cost_amount),0) AS cost,
@@ -14,12 +14,12 @@ export function todaySummary(shopId) {
        FROM sales WHERE shop_id = ? AND ${TODAY}`,
     )
     .get(shopId);
-  const repay = db
+  const repay = await db
     .prepare(
       `SELECT COALESCE(SUM(amount),0) AS total FROM payments WHERE shop_id = ? AND ${TODAY}`,
     )
     .get(shopId);
-  const exp = db
+  const exp = await db
     .prepare(
       `SELECT COALESCE(SUM(amount),0) AS total FROM expenses WHERE shop_id = ? AND ${TODAY}`,
     )
@@ -41,7 +41,7 @@ export function todaySummary(shopId) {
   };
 }
 
-export function salesFeed(shopId, limit = 25) {
+export async function salesFeed(shopId, limit = 25) {
   return db
     .prepare(
       `SELECT s.id, s.item_text, s.qty, s.unit_price, s.amount, s.payment_type,
@@ -52,7 +52,7 @@ export function salesFeed(shopId, limit = 25) {
     .all(shopId, limit);
 }
 
-export function inventory(shopId) {
+export async function inventory(shopId) {
   return db
     .prepare(
       `SELECT id, name, unit, stock_qty, cost_price, sell_price
@@ -61,7 +61,7 @@ export function inventory(shopId) {
     .all(shopId);
 }
 
-export function lowStock(shopId, threshold = 5) {
+export async function lowStock(shopId, threshold = 5) {
   return db
     .prepare(
       `SELECT name, unit, stock_qty FROM products
@@ -73,7 +73,7 @@ export function lowStock(shopId, threshold = 5) {
 /* Outstanding udhaar per customer = udhaar sales − repayments.
    Wrapped in a subquery so we can filter on the computed alias per row
    (HAVING without GROUP BY would collapse to a single group in SQLite). */
-export function dues(shopId) {
+export async function dues(shopId) {
   return db
     .prepare(
       `SELECT id, name, outstanding FROM (
@@ -90,8 +90,8 @@ export function dues(shopId) {
     .all(shopId);
 }
 
-export function totalDues(shopId) {
-  const rows = dues(shopId);
+export async function totalDues(shopId) {
+  const rows = await dues(shopId);
   return {
     total: rows.reduce((s, r) => s + r.outstanding, 0),
     customers: rows,
@@ -105,13 +105,13 @@ export function totalDues(shopId) {
      { status: "clear",     name, outstanding }  — known, but nothing pending
      { status: "not_found", name }               — no such customer
      { status: "no_name" }                        — the message had no name */
-export function customerDues(shopId, name) {
+export async function customerDues(shopId, name) {
   const query = (name || "").trim();
   if (!query) return { status: "no_name" };
 
   const norm = normalize(query);
-  const rows = dues(shopId); // only customers with outstanding > 0
-  const all = db
+  const rows = await dues(shopId); // only customers with outstanding > 0
+  const all = await db
     .prepare("SELECT name, name_norm FROM customers WHERE shop_id = ?")
     .all(shopId);
 
@@ -129,7 +129,7 @@ export function customerDues(shopId, name) {
   return { status: "not_found", name: query };
 }
 
-export function productsSoldToday(shopId) {
+export async function productsSoldToday(shopId) {
   return db
     .prepare(
       `SELECT item_text, SUM(qty) AS qty, SUM(amount) AS amount
@@ -140,7 +140,7 @@ export function productsSoldToday(shopId) {
 }
 
 /* Per-item profit for today: revenue, cost of goods and the profit each item made. */
-export function itemProfitToday(shopId) {
+export async function itemProfitToday(shopId) {
   return db
     .prepare(
       `SELECT item_text AS item, SUM(qty) AS qty,
@@ -153,8 +153,8 @@ export function itemProfitToday(shopId) {
 }
 
 /* Today's best performers, derived from per-item numbers. Returns null when no sales. */
-export function bestSellerToday(shopId) {
-  const rows = itemProfitToday(shopId);
+export async function bestSellerToday(shopId) {
+  const rows = await itemProfitToday(shopId);
   if (!rows.length) return null;
   const byQty = [...rows].sort((a, b) => b.qty - a.qty)[0];
   const byProfit = [...rows].sort((a, b) => b.profit - a.profit)[0];
@@ -165,8 +165,8 @@ export function bestSellerToday(shopId) {
 }
 
 /* Today's expenses: running total plus the individual entries. */
-export function todayExpenses(shopId) {
-  const items = db
+export async function todayExpenses(shopId) {
+  const items = await db
     .prepare(
       `SELECT id, category, note, amount, created_at
        FROM expenses WHERE shop_id = ? AND ${TODAY} ORDER BY created_at DESC`,
@@ -176,44 +176,52 @@ export function todayExpenses(shopId) {
 }
 
 /* Undo the single most recent entry (sale, expense or payment) for a shop.
-   Reverses side effects — a reverted sale returns its qty to stock.
-   Returns { type, description } or null when there is nothing to undo. */
-export function undoLast(shopId) {
-  const candidates = [
-    db.prepare(`SELECT 'sale' AS type, id, created_at, item_text, qty, amount, product_id
-                FROM sales WHERE shop_id = ? ORDER BY created_at DESC, id DESC LIMIT 1`).get(shopId),
-    db.prepare(`SELECT 'expense' AS type, id, created_at, category, note, amount
-                FROM expenses WHERE shop_id = ? ORDER BY created_at DESC, id DESC LIMIT 1`).get(shopId),
-    db.prepare(`SELECT 'payment' AS type, p.id, p.created_at, p.amount, c.name AS party
-                FROM payments p LEFT JOIN customers c ON c.id = p.customer_id
-                WHERE p.shop_id = ? ORDER BY p.created_at DESC, p.id DESC LIMIT 1`).get(shopId),
-  ].filter(Boolean);
+   Reverses side effects — a reverted sale returns its qty to stock. The
+   mutations run in one atomic batch. Returns { type, description } or null when
+   there is nothing to undo. */
+export async function undoLast(shopId) {
+  const candidates = (
+    await Promise.all([
+      db.prepare(`SELECT 'sale' AS type, id, created_at, item_text, qty, amount, product_id
+                  FROM sales WHERE shop_id = ? ORDER BY created_at DESC, id DESC LIMIT 1`).get(shopId),
+      db.prepare(`SELECT 'expense' AS type, id, created_at, category, note, amount
+                  FROM expenses WHERE shop_id = ? ORDER BY created_at DESC, id DESC LIMIT 1`).get(shopId),
+      db.prepare(`SELECT 'payment' AS type, p.id, p.created_at, p.amount, c.name AS party
+                  FROM payments p LEFT JOIN customers c ON c.id = p.customer_id
+                  WHERE p.shop_id = ? ORDER BY p.created_at DESC, p.id DESC LIMIT 1`).get(shopId),
+    ])
+  ).filter(Boolean);
   if (!candidates.length) return null;
 
   const last = candidates.sort((a, b) =>
     b.created_at < a.created_at ? -1 : b.created_at > a.created_at ? 1 : 0,
   )[0];
 
-  const undo = db.transaction((row) => {
-    if (row.type === "sale") {
-      if (row.product_id) {
-        db.prepare("UPDATE products SET stock_qty = stock_qty + ? WHERE id = ?").run(row.qty, row.product_id);
-      }
-      db.prepare("DELETE FROM sales WHERE id = ?").run(row.id);
-      return { type: "sale", description: `${+Number(row.qty)} ${row.item_text} (₹${Math.round(row.amount)})` };
+  const statements = [];
+  let result;
+  if (last.type === "sale") {
+    if (last.product_id) {
+      statements.push({
+        sql: "UPDATE products SET stock_qty = stock_qty + ? WHERE id = ?",
+        args: [last.qty, last.product_id],
+      });
     }
-    if (row.type === "expense") {
-      db.prepare("DELETE FROM expenses WHERE id = ?").run(row.id);
-      return { type: "expense", description: `${row.category || row.note || "expense"} (₹${Math.round(row.amount)})` };
-    }
-    db.prepare("DELETE FROM payments WHERE id = ?").run(row.id);
-    return { type: "payment", description: `${row.party || "payment"} (₹${Math.round(row.amount)})` };
-  });
-  return undo(last);
+    statements.push({ sql: "DELETE FROM sales WHERE id = ?", args: [last.id] });
+    result = { type: "sale", description: `${+Number(last.qty)} ${last.item_text} (₹${Math.round(last.amount)})` };
+  } else if (last.type === "expense") {
+    statements.push({ sql: "DELETE FROM expenses WHERE id = ?", args: [last.id] });
+    result = { type: "expense", description: `${last.category || last.note || "expense"} (₹${Math.round(last.amount)})` };
+  } else {
+    statements.push({ sql: "DELETE FROM payments WHERE id = ?", args: [last.id] });
+    result = { type: "payment", description: `${last.party || "payment"} (₹${Math.round(last.amount)})` };
+  }
+
+  await db.batch(statements);
+  return result;
 }
 
-export function last7Days(shopId) {
-  const rows = db
+export async function last7Days(shopId) {
+  const rows = await db
     .prepare(
       `SELECT date(created_at, 'localtime') AS day,
               SUM(amount) AS revenue,
@@ -227,9 +235,9 @@ export function last7Days(shopId) {
   const byDay = Object.fromEntries(rows.map((r) => [r.day, r]));
   const out = [];
   for (let i = 6; i >= 0; i--) {
-    const d = db
-      .prepare("SELECT date('now','localtime', ?) AS d")
-      .get(`-${i} days`).d;
+    const d = (
+      await db.prepare("SELECT date('now','localtime', ?) AS d").get(`-${i} days`)
+    ).d;
     out.push({ day: d, revenue: byDay[d]?.revenue || 0, profit: byDay[d]?.profit || 0 });
   }
   return out;

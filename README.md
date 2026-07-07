@@ -8,7 +8,7 @@ snapping a photo of their notebook**. Understands **English, Hindi & Telugu**
 - **Marketing site** — the pitch (`/`)
 - **WhatsApp simulator** — try the assistant with zero setup (`/simulator`)
 - **Shop dashboard** — live sales, profit, inventory, dues, 7-day trend (`/app`)
-- **Backend** — Express + SQLite, Claude parsing, Sarvam voice, Twilio WhatsApp
+- **Backend** — Express + libSQL/Turso, Claude parsing, Sarvam voice, Twilio WhatsApp
 
 ## Architecture
 
@@ -16,7 +16,7 @@ snapping a photo of their notebook**. Understands **English, Hindi & Telugu**
 Voice note / text  ─▶  Sarvam STT (voice→text)  ─▶  Claude (understand + extract)
        │                                                     │
    WhatsApp (Twilio)  ── or ──  Web simulator                ▼
-                                              intents → SQLite (sales/stock/udhaar)
+                                     intents → libSQL/Turso (sales/stock/udhaar)
                                                      │
                        localized reply (EN/HI/TE)  ◀─┘  →  live dashboard
 ```
@@ -73,7 +73,8 @@ So you can demo the entire product immediately, then add keys for full accuracy
 | `Ramesh paid 50` | records a repayment |
 | `aaj ka profit kitna hua` | today's profit |
 | `kitne paise aaye aaj` | money received today |
-| `kaun kaun ka udhaar baaki hai` | outstanding dues |
+| `kaun kaun ka udhaar baaki hai` | outstanding dues (everyone) |
+| `Ramesh ka udhaar kitna hai` | one customer's balance |
 | `ఈ రోజు అమ్మకాలు ఎంత` | today's sales (Telugu) |
 
 ## Backend pipeline smoke test (no keys needed)
@@ -82,9 +83,25 @@ So you can demo the entire product immediately, then add keys for full accuracy
 npm --prefix server run test:pipeline
 ```
 
+## Deploy (free)
+
+The backend stores data in a **Turso / libSQL** cloud database, so it deploys to
+Render's **free** web-service plan (no persistent disk). Locally, no cloud is
+needed — with `TURSO_DATABASE_URL` unset the server falls back to a local SQLite
+file (`server/data/dukaan.db`).
+
+1. Create a DB: `turso db create dukaan-saathi`, then grab the URL and a token
+   (`turso db tokens create dukaan-saathi`).
+2. Push this repo to GitHub.
+3. On [Render](https://dashboard.render.com): **New → Blueprint** → pick the repo
+   (`render.yaml` is read automatically) → set `JWT_SECRET`, `TURSO_DATABASE_URL`,
+   `TURSO_AUTH_TOKEN` (and optionally `ANTHROPIC_API_KEY`) → **Apply**.
+
+Free web services sleep after ~15 min idle and cold-start on the next request.
+
 ## Tech
 React 19 · Vite · Tailwind v4 · Framer Motion · Recharts · react-i18next ·
-Express 5 · better-sqlite3 · @anthropic-ai/sdk (Claude) · Sarvam AI · Twilio.
+Express 5 · @libsql/client (Turso/libSQL) · @anthropic-ai/sdk (Claude) · Sarvam AI · Twilio.
 
 ## Notes
 - PIN login is lightweight demo auth (bcrypt-hashed), not production identity.

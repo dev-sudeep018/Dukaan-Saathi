@@ -1,20 +1,52 @@
-import Database from "better-sqlite3";
+import { createClient } from "@libsql/client";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 import { mkdirSync } from "node:fs";
+import { config } from "./config.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-// DATA_DIR lets the host mount a persistent disk at a clean absolute path
-// (e.g. Render's disk at /var/data). Unset in local dev → <server>/data.
-const dataDir = process.env.DATA_DIR || join(__dirname, "data");
-mkdirSync(dataDir, { recursive: true });
 
-export const db = new Database(join(dataDir, "dukaan.db"));
-db.pragma("journal_mode = WAL");
-db.pragma("foreign_keys = ON");
+/* Connection. In production TURSO_DATABASE_URL points at a Turso/libSQL cloud
+   database (with an auth token). With no URL set we fall back to a local SQLite
+   file so local dev / tests need no cloud account — same code path either way. */
+let url = config.turso.url;
+let authToken = config.turso.authToken || undefined;
+if (!url) {
+  // DATA_DIR lets a host mount a disk; otherwise <server>/data. Only used for
+  // the local file fallback — the cloud path ignores it.
+  const dataDir = process.env.DATA_DIR || join(__dirname, "data");
+  mkdirSync(dataDir, { recursive: true });
+  // libSQL file: URLs want forward slashes even on Windows (C:\a\b -> C:/a/b).
+  url = "file:" + join(dataDir, "dukaan.db").replace(/\\/g, "/");
+  authToken = undefined;
+}
+
+const client = createClient({ url, authToken });
+
+/* ---- better-sqlite3-shaped async adapter ---------------------------------
+   Mirrors the tiny slice of the better-sqlite3 API this app uses, but every
+   call returns a Promise. Call sites keep their SQL verbatim (libSQL speaks the
+   same SQLite dialect) and just `await` the result. */
+const stmt = (sql) => ({
+  get: async (...args) => (await client.execute({ sql, args })).rows[0],
+  all: async (...args) => (await client.execute({ sql, args })).rows,
+  run: async (...args) => {
+    const r = await client.execute({ sql, args });
+    return {
+      lastInsertRowid: r.lastInsertRowid != null ? Number(r.lastInsertRowid) : undefined,
+      changes: r.rowsAffected,
+    };
+  },
+});
+
+export const db = {
+  prepare: stmt,
+  /* Run several statements atomically. Each item is { sql, args }. */
+  batch: (statements) => client.batch(statements, "write"),
+};
 
 /* ---- Schema (idempotent) -------------------------------------------------- */
-db.exec(`
+const SCHEMA = `
 CREATE TABLE IF NOT EXISTS shops (
   id             INTEGER PRIMARY KEY AUTOINCREMENT,
   name           TEXT NOT NULL DEFAULT 'My Shop',
@@ -94,27 +126,31 @@ CREATE TABLE IF NOT EXISTS messages (
   created_at  TEXT NOT NULL DEFAULT (datetime('now'))
 );
 CREATE INDEX IF NOT EXISTS idx_messages_shop ON messages(shop_id, created_at);
-`);
+`;
+
+/* Resolves once the schema exists. Boot code (index.js) and scripts await this
+   before serving/using the DB. */
+export const dbReady = client.executeMultiple(SCHEMA);
 
 /* ---- Helpers -------------------------------------------------------------- */
 export const normalize = (s) =>
   (s || "").toString().trim().toLowerCase().replace(/\s+/g, " ");
 
 /* Find a shop by WhatsApp number, or create one on first contact. */
-export function getOrCreateShop(whatsappNumber, name = "My Shop") {
+export async function getOrCreateShop(whatsappNumber, name = "My Shop") {
   const number = whatsappNumber.replace(/^whatsapp:/, "");
-  let shop = db
+  let shop = await db
     .prepare("SELECT * FROM shops WHERE whatsapp_number = ?")
     .get(number);
   if (!shop) {
-    const info = db
+    const info = await db
       .prepare("INSERT INTO shops (name, whatsapp_number) VALUES (?, ?)")
       .run(name, number);
-    shop = db.prepare("SELECT * FROM shops WHERE id = ?").get(info.lastInsertRowid);
+    shop = await db.prepare("SELECT * FROM shops WHERE id = ?").get(info.lastInsertRowid);
   }
   return shop;
 }
 
-export function getShopById(id) {
+export async function getShopById(id) {
   return db.prepare("SELECT * FROM shops WHERE id = ?").get(id);
 }

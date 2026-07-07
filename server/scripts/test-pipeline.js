@@ -1,16 +1,15 @@
 /* Smoke test for the message pipeline — no external keys required (uses the
    rule-based mock parser when ANTHROPIC_API_KEY is unset). Run: npm run test:pipeline */
-import { getOrCreateShop, db } from "../db.js";
+import { getOrCreateShop, db, dbReady } from "../db.js";
 import { handleMessage } from "../lib/pipeline.js";
 import { todaySummary, totalDues, todayExpenses } from "../lib/queries.js";
 
-const shop = getOrCreateShop("+19999999999", "Test Shop");
+await dbReady;
+const shop = await getOrCreateShop("+19999999999", "Test Shop");
 // clean slate for this test shop
-db.prepare("DELETE FROM sales WHERE shop_id = ?").run(shop.id);
-db.prepare("DELETE FROM payments WHERE shop_id = ?").run(shop.id);
-db.prepare("DELETE FROM expenses WHERE shop_id = ?").run(shop.id);
-db.prepare("DELETE FROM products WHERE shop_id = ?").run(shop.id);
-db.prepare("DELETE FROM customers WHERE shop_id = ?").run(shop.id);
+for (const table of ["sales", "payments", "expenses", "products", "customers"]) {
+  await db.prepare(`DELETE FROM ${table} WHERE shop_id = ?`).run(shop.id);
+}
 
 const messages = [
   "2 kg rice 100 rupees cash",
@@ -40,8 +39,8 @@ for (const text of messages) {
 }
 
 console.log("--- Final state ---");
-console.log("Today summary:", todaySummary(shop.id));
-console.log("Expenses:", JSON.stringify(todayExpenses(shop.id)));
-console.log("Dues:", JSON.stringify(totalDues(shop.id)));
+console.log("Today summary:", await todaySummary(shop.id));
+console.log("Expenses:", JSON.stringify(await todayExpenses(shop.id)));
+console.log("Dues:", JSON.stringify(await totalDues(shop.id)));
 console.log("\n(If Claude were enabled, parsing accuracy — especially Telugu — would be much higher.)\n");
 process.exit(0);

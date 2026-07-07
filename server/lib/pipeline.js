@@ -25,11 +25,11 @@ export async function handleMessage({ shop, text, channel = "sim", transcript = 
   const lang = parsed.language || shop.lang_pref || "en";
 
   // log inbound
-  logMessage(shop.id, "in", channel, content, transcript, lang, parsed.intent, parsed);
+  await logMessage(shop.id, "in", channel, content, transcript, lang, parsed.intent, parsed);
 
   let result;
   try {
-    result = executeIntent(parsed, shop);
+    result = await executeIntent(parsed, shop);
   } catch (err) {
     console.error("[pipeline] intent execution failed:", err.message);
     result = { replyKey: "error", data: {} };
@@ -37,18 +37,18 @@ export async function handleMessage({ shop, text, channel = "sim", transcript = 
 
   // remember the language the shopkeeper used
   if (["en", "hi", "te"].includes(lang) && lang !== shop.lang_pref) {
-    db.prepare("UPDATE shops SET lang_pref = ? WHERE id = ?").run(lang, shop.id);
+    await db.prepare("UPDATE shops SET lang_pref = ? WHERE id = ?").run(lang, shop.id);
   }
 
   const reply = compose(result.replyKey, lang, result.data);
-  logMessage(shop.id, "out", channel, reply, null, lang, result.replyKey, result.data);
+  await logMessage(shop.id, "out", channel, reply, null, lang, result.replyKey, result.data);
 
   return { reply, intent: parsed.intent, language: lang, parsed, result, transcript };
 }
 
-function logMessage(shopId, direction, channel, raw, transcript, lang, intent, parsed) {
+async function logMessage(shopId, direction, channel, raw, transcript, lang, intent, parsed) {
   try {
-    db.prepare(
+    await db.prepare(
       `INSERT INTO messages (shop_id, direction, channel, raw_text, transcript, lang, intent, parsed_json)
        VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
     ).run(shopId, direction, channel, raw, transcript, lang, intent, JSON.stringify(parsed || {}));

@@ -16,12 +16,12 @@ const DEMO_NUMBER = "+10000000000";
    1. a valid Bearer token (logged-in shop), else
    2. an explicit `number` in the request, else
    3. a shared demo shop — so anyone can try with zero setup. */
-function resolveShop(req) {
+async function resolveShop(req) {
   const header = req.headers.authorization || "";
   if (header.startsWith("Bearer ")) {
     try {
       const { shopId } = jwt.verify(header.slice(7), config.jwtSecret);
-      const shop = getShopById(shopId);
+      const shop = await getShopById(shopId);
       if (shop) return shop;
     } catch {
       /* fall through to number/demo */
@@ -33,7 +33,7 @@ function resolveShop(req) {
 
 simulateRouter.post("/message", async (req, res) => {
   try {
-    const shop = resolveShop(req);
+    const shop = await resolveShop(req);
     const out = await handleMessage({
       shop,
       text: req.body?.text || "",
@@ -48,7 +48,7 @@ simulateRouter.post("/message", async (req, res) => {
 
 simulateRouter.post("/voice", upload.single("audio"), async (req, res) => {
   try {
-    const shop = resolveShop(req);
+    const shop = await resolveShop(req);
     if (!flags.hasSarvam) {
       return res.json({
         reply: compose("voice_disabled", shop.lang_pref || "en", {}),

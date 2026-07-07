@@ -28,7 +28,7 @@ whatsappRouter.post("/whatsapp", async (req, res) => {
 
   if (!From) return res.send(twiml("Sorry, I couldn't identify your number."));
 
-  const shop = getOrCreateShop(From);
+  const shop = await getOrCreateShop(From);
   let text = (Body || "").trim();
   let transcript = null;
 

@@ -11,6 +11,13 @@ export const config = {
     model: process.env.CLAUDE_MODEL || "claude-sonnet-5",
   },
 
+  // Turso / libSQL. When the URL is unset we fall back to a local SQLite file
+  // (see db.js) so local dev needs no cloud account.
+  turso: {
+    url: process.env.TURSO_DATABASE_URL || "",
+    authToken: process.env.TURSO_AUTH_TOKEN || "",
+  },
+
   sarvam: {
     apiKey: process.env.SARVAM_API_KEY || "",
     model: process.env.SARVAM_STT_MODEL || "saarika:v2.5",
