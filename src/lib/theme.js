@@ -3,8 +3,8 @@ import { useState, useEffect } from "react";
 export function useTheme() {
   const [theme, setTheme] = useState(() => {
     const saved = localStorage.getItem("dukaan_theme");
-    if (saved) return saved;
-    return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+    if (saved === "dark" || saved === "light") return saved;
+    return "light";
   });
 
   useEffect(() => {
