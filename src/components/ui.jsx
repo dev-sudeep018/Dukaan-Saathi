@@ -4,8 +4,30 @@ import { Mic } from "lucide-react";
 /* Reveal-on-scroll wrapper. Motion already honors prefers-reduced-motion by
    shrinking transforms, and our CSS zeroes durations, so this stays gentle. */
 export function Reveal({ children, delay = 0, y = 24, className = "" }) {
+  const ref = useRef(null);
+  const [key, setKey] = useState(0);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+
+    const onReveal = (ev) => {
+      try {
+        const section = el.closest("section");
+        const targetId = section?.id;
+        // If event has no id, treat as a global retrigger. Otherwise match by id.
+        if (!ev?.detail?.id || ev.detail.id === targetId) setKey((k) => k + 1);
+      } catch (e) {}
+    };
+
+    document.addEventListener("reveal-section", onReveal);
+    return () => document.removeEventListener("reveal-section", onReveal);
+  }, []);
+
   return (
     <motion.div
+      key={key}
+      ref={ref}
       className={className}
       initial={{ opacity: 0, y }}
       whileInView={{ opacity: 1, y: 0 }}

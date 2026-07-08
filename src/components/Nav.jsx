@@ -46,6 +46,8 @@ export default function Nav() {
                 const target = document.querySelector(l.href);
                 if (target) {
                   e.preventDefault();
+                  // notify reveal listeners for this section so animations re-run
+                  document.dispatchEvent(new CustomEvent("reveal-section", { detail: { id: l.href.replace('#', '') } }));
                   target.scrollIntoView({ behavior: "smooth" });
                 }
               }}
@@ -80,6 +82,8 @@ export default function Nav() {
                   const target = document.querySelector(l.href);
                   if (target) {
                     e.preventDefault();
+                    // notify reveal listeners for this section so animations re-run
+                    document.dispatchEvent(new CustomEvent("reveal-section", { detail: { id: l.href.replace('#', '') } }));
                     setOpen(false);
                     setTimeout(() => target.scrollIntoView({ behavior: "smooth" }), 50);
                   }
