@@ -1,33 +1,25 @@
 import { useState, useEffect } from "react";
 
-export function useTheme() {
-  const [theme, setTheme] = useState(() => {
-    const saved = localStorage.getItem("dukaan_theme");
-    const explicitChoice = localStorage.getItem("dukaan_theme_explicit");
+function applyLightTheme() {
+  if (typeof window === "undefined") return;
 
-    if (saved === "light") return "light";
-    if (saved === "dark" && explicitChoice === "dark") return "dark";
-    return "light";
-  });
+  const root = window.document.documentElement;
+  root.classList.remove("dark");
+  root.style.colorScheme = "light";
+  localStorage.setItem("dukaan_theme", "light");
+  localStorage.setItem("dukaan_theme_explicit", "light");
+}
+
+export function useTheme() {
+  const [theme, setTheme] = useState("light");
 
   useEffect(() => {
-    const root = window.document.documentElement;
-    if (theme === "dark") {
-      root.classList.add("dark");
-    } else {
-      root.classList.remove("dark");
-    }
-
-    localStorage.setItem("dukaan_theme", theme);
-    localStorage.setItem("dukaan_theme_explicit", theme === "dark" ? "dark" : "light");
-  }, [theme]);
+    applyLightTheme();
+  }, []);
 
   const toggleTheme = () => {
-    setTheme((prev) => {
-      const next = prev === "dark" ? "light" : "dark";
-      localStorage.setItem("dukaan_theme_explicit", next === "dark" ? "dark" : "light");
-      return next;
-    });
+    applyLightTheme();
+    setTheme("light");
   };
 
   return { theme, toggleTheme, setTheme };

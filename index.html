@@ -18,6 +18,17 @@
     />
   </head>
   <body>
+    <script>
+      try {
+        const root = document.documentElement;
+        root.classList.remove("dark");
+        root.style.colorScheme = "light";
+        localStorage.setItem("dukaan_theme", "light");
+        localStorage.setItem("dukaan_theme_explicit", "light");
+      } catch (error) {
+        console.warn("Theme bootstrap failed", error);
+      }
+    </script>
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
   </body>
