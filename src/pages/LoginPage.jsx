@@ -77,7 +77,7 @@ export default function LoginPage() {
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="rounded-[2rem] bg-white p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] ring-1 ring-black/5 sm:p-10"
+          className="rounded-[2rem] bg-white dark:bg-shopfront p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] ring-1 ring-black/5 dark:ring-white/5 sm:p-10"
         >
           <div className="mb-8 flex flex-col items-center text-center">
             <span className="grid h-16 w-16 place-items-center rounded-2xl bg-leaf/10 text-leaf mb-4 ring-1 ring-leaf/20">
@@ -98,7 +98,7 @@ export default function LoginPage() {
           >
             <Sparkles className="h-4 w-4 text-marigold" />
             <span>🚀 Explore Demo</span>
-            <div className="absolute inset-0 -translate-x-full bg-white/20 transition-transform duration-500 group-hover:translate-x-full" />
+            <div className="absolute inset-0 -translate-x-full bg-white dark:bg-shopfront/20 transition-transform duration-500 group-hover:translate-x-full" />
           </button>
 
           <div className="my-6 flex items-center gap-3 text-xs uppercase tracking-widest text-ink/40">
@@ -113,7 +113,7 @@ export default function LoginPage() {
               onChange={(e) => setShopName(e.target.value)}
               placeholder="Enter your Shop Name"
               disabled={busy}
-              className="w-full rounded-full border border-black/10 bg-paper px-5 py-3.5 pr-12 text-sm text-ink outline-none transition-all focus:border-leaf focus:bg-white focus:ring-4 focus:ring-leaf/10 disabled:opacity-50"
+              className="w-full rounded-full border border-black/10 dark:border-white/10 bg-paper px-5 py-3.5 pr-12 text-sm text-ink outline-none transition-all focus:border-leaf focus:bg-white dark:bg-shopfront focus:ring-4 focus:ring-leaf/10 disabled:opacity-50"
             />
             <button
               type="submit"

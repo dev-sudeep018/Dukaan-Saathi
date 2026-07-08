@@ -55,7 +55,7 @@ export default function SettingsPage() {
             <div>
               <label className="block text-sm font-medium text-ink/70 mb-1">Store Name</label>
               <input
-                className="w-full rounded-xl border border-black/15 bg-paper px-4 py-2.5 text-sm text-shopfront outline-none focus:border-marigold focus:ring-2 focus:ring-marigold/20"
+                className="w-full rounded-xl border border-black/15 dark:border-white/15 bg-paper px-4 py-2.5 text-sm text-shopfront outline-none focus:border-marigold focus:ring-2 focus:ring-marigold/20"
                 value={form.name}
                 onChange={(e) => setForm({ ...form, name: e.target.value })}
                 placeholder="My Awesome Shop"
@@ -68,7 +68,7 @@ export default function SettingsPage() {
                 <Globe className="h-4 w-4" /> Language Preference
               </label>
               <select
-                className="w-full rounded-xl border border-black/15 bg-paper px-4 py-2.5 text-sm text-shopfront outline-none focus:border-marigold focus:ring-2 focus:ring-marigold/20"
+                className="w-full rounded-xl border border-black/15 dark:border-white/15 bg-paper px-4 py-2.5 text-sm text-shopfront outline-none focus:border-marigold focus:ring-2 focus:ring-marigold/20"
                 value={form.lang}
                 onChange={(e) => setForm({ ...form, lang: e.target.value })}
               >

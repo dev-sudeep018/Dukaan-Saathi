@@ -27,7 +27,7 @@ export default function Problem() {
           return (
             <Reveal key={c.key} delay={i * 0.06}>
               <article
-                className="torn-bottom ledger-margin relative h-full overflow-hidden rounded-t-lg bg-[#fffdf6] pb-8 pl-12 pr-5 pt-5 shadow-[var(--shadow-card)] ring-1 ring-black/5 transition-transform hover:!rotate-0"
+                className="torn-bottom ledger-margin relative h-full overflow-hidden rounded-t-lg bg-[#fffdf6] pb-8 pl-12 pr-5 pt-5 shadow-[var(--shadow-card)] ring-1 ring-black/5 dark:ring-white/5 transition-transform hover:!rotate-0"
                 style={{ transform: `rotate(${c.rotate})` }}
               >
                 <div className="ledger-lines absolute inset-0 opacity-60" />

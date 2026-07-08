@@ -24,7 +24,7 @@ export default function ReportsPage() {
           <span className="font-semibold capitalize text-base">{data.bestSeller.topSeller.item}</span>
           <span className="text-ink/60">is your {t("dashboard.bestSeller")} today!</span>
           {data.bestSeller.topProfit && (
-            <span className="ml-auto text-ink/60 bg-white/50 px-3 py-1.5 rounded-full border border-marigold/20">
+            <span className="ml-auto text-ink/60 bg-white dark:bg-shopfront/50 px-3 py-1.5 rounded-full border border-marigold/20">
               {t("dashboard.mostProfit")}: <span className="font-semibold capitalize text-shopfront">{data.bestSeller.topProfit.item}</span> ({money(data.bestSeller.topProfit.profit)})
             </span>
           )}
@@ -46,7 +46,7 @@ export default function ReportsPage() {
                 </thead>
                 <tbody>
                   {data.itemProfit.map((row) => (
-                    <tr key={row.item} className="border-t border-black/5">
+                    <tr key={row.item} className="border-t border-black/5 dark:border-white/5">
                       <td className="py-2.5 font-medium capitalize text-shopfront">{row.item}</td>
                       <td className="py-2.5 text-ink/70">{+Number(row.qty).toFixed(1)}</td>
                       <td className="py-2.5 text-ink/70">{money(row.revenue)}</td>
@@ -65,7 +65,7 @@ export default function ReportsPage() {
           {data?.expenses?.items?.length ? (
             <ul className="space-y-2">
               {data.expenses.items.map((e) => (
-                <li key={e.id} className="flex items-center justify-between gap-2 rounded-lg bg-paper px-3 py-2 border border-black/5">
+                <li key={e.id} className="flex items-center justify-between gap-2 rounded-lg bg-paper px-3 py-2 border border-black/5 dark:border-white/5">
                   <span className="font-medium capitalize text-shopfront">{e.category}</span>
                   <span className="text-sm font-semibold text-terracotta">{money(e.amount)}</span>
                 </li>

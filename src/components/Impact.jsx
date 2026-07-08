@@ -12,7 +12,7 @@ const STATS = [
 function Stat({ prefix, target, suffix, label, sub }) {
   const { ref, display } = useCountUp(target);
   return (
-    <div ref={ref} className="rounded-2xl bg-white/5 p-6 ring-1 ring-white/10 backdrop-blur-sm">
+    <div ref={ref} className="rounded-2xl bg-white dark:bg-shopfront/5 p-6 ring-1 ring-white/10 backdrop-blur-sm">
       <p className="font-display text-4xl font-semibold text-marigold sm:text-5xl">
         {prefix}
         {display}

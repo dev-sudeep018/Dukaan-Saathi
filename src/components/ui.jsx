@@ -63,9 +63,9 @@ export function Eyebrow({ children, className = "" }) {
 export function PhoneShell({ children, className = "" }) {
   return (
     <div
-      className={`relative w-full max-w-[340px] overflow-hidden rounded-[2rem] border border-black/5 bg-paper shadow-2xl ring-1 ring-black/5 ${className}`}
+      className={`relative w-full max-w-[340px] overflow-hidden rounded-[2rem] border border-black/5 dark:border-white/5 bg-paper shadow-2xl ring-1 ring-black/5 dark:ring-white/5 ${className}`}
     >
-      <div className="flex items-center gap-3 bg-white px-4 py-3 shadow-sm border-b border-black/5">
+      <div className="flex items-center gap-3 bg-white dark:bg-shopfront px-4 py-3 shadow-sm border-b border-black/5 dark:border-white/5">
         <div className="relative grid h-9 w-9 place-items-center rounded-full bg-shopfront text-sm font-bold text-marigold">
           दु
           <span className="absolute bottom-0 right-0 h-2.5 w-2.5 rounded-full border-2 border-white bg-leaf"></span>
@@ -90,10 +90,10 @@ export function Bubble({ side = "in", children, className = "" }) {
   return (
     <div className={`flex ${isOut ? "justify-end" : "justify-start"}`}>
       <div
-        className={`max-w-[82%] rounded-2xl px-3.5 py-2.5 text-[13px] leading-snug shadow-sm ring-1 ring-black/5 ${
+        className={`max-w-[82%] rounded-2xl px-3.5 py-2.5 text-[13px] leading-snug shadow-sm ring-1 ring-black/5 dark:ring-white/5 ${
           isOut
             ? "rounded-br-sm bg-shopfront text-paper"
-            : "rounded-bl-sm bg-white text-ink"
+            : "rounded-bl-sm bg-white dark:bg-shopfront text-ink"
         } ${className}`}
       >
         {children}
@@ -109,7 +109,7 @@ export function VoiceNote({ side = "out", duration = "0:06" }) {
     <div className={`flex ${isOut ? "justify-end" : "justify-start"}`}>
       <div
         className={`flex max-w-[82%] items-center gap-2.5 rounded-2xl px-3 py-2.5 shadow-sm ${
-          isOut ? "rounded-br-sm bg-shopfront" : "rounded-bl-sm bg-white"
+          isOut ? "rounded-br-sm bg-shopfront" : "rounded-bl-sm bg-white dark:bg-shopfront"
         }`}
       >
         <Mic className={`h-4 w-4 ${isOut ? "text-leaf" : "text-terracotta"}`} />
@@ -142,7 +142,7 @@ export function Waveform({ tone = "light", bars = 22 }) {
 
 export function TypingDots() {
   return (
-    <div className="flex w-fit items-center gap-1 rounded-2xl rounded-bl-md bg-white px-3.5 py-3">
+    <div className="flex w-fit items-center gap-1 rounded-2xl rounded-bl-md bg-white dark:bg-shopfront px-3.5 py-3">
       {[0, 0.2, 0.4].map((d) => (
         <span
           key={d}
@@ -164,7 +164,7 @@ export function Skeleton({ className = "" }) {
 export function ResultCard({ rows, title = "Logged", tone = "leaf" }) {
   const accent = tone === "leaf" ? "text-leaf" : "text-marigold";
   return (
-    <div className="rounded-xl border border-black/5 bg-white p-3 text-ink shadow-sm">
+    <div className="rounded-xl border border-black/5 dark:border-white/5 bg-white dark:bg-shopfront p-3 text-ink shadow-sm">
       <p className={`mb-2 font-sans text-[11px] font-semibold uppercase tracking-wide ${accent}`}>
         ✓ {title}
       </p>

@@ -53,11 +53,11 @@ export default function UdhaarPage() {
         <div className="space-y-6">
           <Card title="Summary">
             <div className="flex flex-col gap-4">
-              <div className="flex justify-between items-center pb-4 border-b border-black/5">
+              <div className="flex justify-between items-center pb-4 border-b border-black/5 dark:border-white/5">
                 <span className="text-ink/60">Total Outstanding</span>
                 <span className="font-bold text-lg text-terracotta">{money(data?.dues?.total || 0)}</span>
               </div>
-              <div className="flex justify-between items-center pb-4 border-b border-black/5">
+              <div className="flex justify-between items-center pb-4 border-b border-black/5 dark:border-white/5">
                 <span className="text-ink/60">Customers in Debt</span>
                 <span className="font-bold text-lg text-shopfront">{data?.dues?.customers?.length || 0}</span>
               </div>

@@ -128,10 +128,10 @@ export default function AiChat({ onUpdateDashboard }) {
     <motion.div 
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="fixed bottom-6 right-6 z-50 flex h-[600px] max-h-[85vh] w-[380px] max-w-[calc(100vw-48px)] flex-col overflow-hidden rounded-[2rem] bg-paper shadow-[0_20px_40px_rgb(0,0,0,0.12)] ring-1 ring-black/5"
+      className="fixed bottom-6 right-6 z-50 flex h-[600px] max-h-[85vh] w-[380px] max-w-[calc(100vw-48px)] flex-col overflow-hidden rounded-[2rem] bg-paper shadow-[0_20px_40px_rgb(0,0,0,0.12)] ring-1 ring-black/5 dark:ring-white/5"
     >
       {/* Header */}
-      <div className="flex items-center justify-between bg-white px-5 py-4 shadow-sm z-10">
+      <div className="flex items-center justify-between bg-white dark:bg-shopfront px-5 py-4 shadow-sm z-10">
         <div className="flex items-center gap-3">
           <div className="relative grid h-10 w-10 place-items-center rounded-full bg-shopfront text-marigold">
             <span className="font-display text-lg font-bold">दु</span>
@@ -163,7 +163,7 @@ export default function AiChat({ onUpdateDashboard }) {
                     ? "rounded-br-sm bg-shopfront text-paper" 
                     : m.isError 
                       ? "rounded-bl-sm bg-terracotta/10 text-terracotta ring-1 ring-terracotta/20" 
-                      : "rounded-bl-sm bg-white text-ink ring-1 ring-black/5"
+                      : "rounded-bl-sm bg-white dark:bg-shopfront text-ink ring-1 ring-black/5 dark:ring-white/5"
                 }`}>
                   {m.type === "scan_result" ? (
                     <div className="space-y-2">
@@ -204,7 +204,7 @@ export default function AiChat({ onUpdateDashboard }) {
           <button 
             key={s}
             onClick={() => send(s)}
-            className="whitespace-nowrap rounded-full bg-white px-3 py-1.5 text-[11px] font-medium text-ink/60 shadow-sm ring-1 ring-black/5 transition-colors hover:bg-paper-deep hover:text-shopfront"
+            className="whitespace-nowrap rounded-full bg-white dark:bg-shopfront px-3 py-1.5 text-[11px] font-medium text-ink/60 shadow-sm ring-1 ring-black/5 dark:ring-white/5 transition-colors hover:bg-paper-deep hover:text-shopfront"
           >
             {s}
           </button>
@@ -212,13 +212,13 @@ export default function AiChat({ onUpdateDashboard }) {
       </div>
 
       {/* Input */}
-      <div className="bg-white p-4 pt-2">
+      <div className="bg-white dark:bg-shopfront p-4 pt-2">
         <form 
           onSubmit={(e) => { e.preventDefault(); send(); }}
-          className="relative flex items-end gap-2 rounded-2xl bg-paper px-2 py-2 ring-1 ring-black/5 focus-within:ring-2 focus-within:ring-leaf/30 transition-all"
+          className="relative flex items-end gap-2 rounded-2xl bg-paper px-2 py-2 ring-1 ring-black/5 dark:ring-white/5 focus-within:ring-2 focus-within:ring-leaf/30 transition-all"
         >
           <input type="file" ref={fileInputRef} onChange={handleFileUpload} accept="image/*" className="hidden" />
-          <button type="button" onClick={() => fileInputRef.current?.click()} className="grid h-10 w-10 shrink-0 place-items-center rounded-full text-ink/40 transition-colors hover:bg-white hover:text-shopfront">
+          <button type="button" onClick={() => fileInputRef.current?.click()} className="grid h-10 w-10 shrink-0 place-items-center rounded-full text-ink/40 transition-colors hover:bg-white dark:bg-shopfront hover:text-shopfront">
             <Paperclip className="h-4 w-4" />
           </button>
           <textarea

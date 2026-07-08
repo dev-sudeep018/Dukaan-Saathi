@@ -52,7 +52,7 @@ export function ToastProvider({ children }) {
             return (
               <div
                 key={t.id}
-                className={`toast-in pointer-events-auto relative flex w-full max-w-sm items-center gap-3 overflow-hidden rounded-2xl bg-white/95 py-3 pl-5 pr-3 shadow-[var(--shadow-card)] ring-1 ${tone.ring} backdrop-blur`}
+                className={`toast-in pointer-events-auto relative flex w-full max-w-sm items-center gap-3 overflow-hidden rounded-2xl bg-white dark:bg-shopfront/95 py-3 pl-5 pr-3 shadow-[var(--shadow-card)] ring-1 ${tone.ring} backdrop-blur`}
                 role="status"
               >
                 <span className={`absolute left-0 top-0 h-full w-1 ${tone.bar}`} />

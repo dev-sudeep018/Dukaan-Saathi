@@ -15,7 +15,7 @@ export default function InventoryPage() {
         <h1 className="font-display text-2xl font-bold text-shopfront">Inventory</h1>
         <button
           onClick={exportCsv}
-          className="inline-flex items-center gap-1.5 rounded-full bg-white px-4 py-2 text-xs font-semibold text-ink/70 ring-1 ring-black/5 hover:bg-paper-deep"
+          className="inline-flex items-center gap-1.5 rounded-full bg-white dark:bg-shopfront px-4 py-2 text-xs font-semibold text-ink/70 ring-1 ring-black/5 dark:ring-white/5 hover:bg-paper-deep"
         >
           <Download className="h-4 w-4" /> Export
         </button>
@@ -36,7 +36,7 @@ export default function InventoryPage() {
                 {data.inventory.map((p) => {
                   const low = p.stock_qty <= 5;
                   return (
-                    <tr key={p.id} className="border-t border-black/5">
+                    <tr key={p.id} className="border-t border-black/5 dark:border-white/5">
                       <td className="py-2.5 font-medium capitalize text-shopfront">
                         <div className="flex items-center gap-2">
                           {low && <AlertTriangle className="h-4 w-4 text-terracotta" />}

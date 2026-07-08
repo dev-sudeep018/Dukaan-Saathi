@@ -121,14 +121,14 @@ export default function DashboardPage() {
           <button
             onClick={exportCsv}
             disabled={busy === "export"}
-            className="inline-flex items-center gap-1.5 rounded-full bg-white px-4 py-2 text-xs font-semibold text-ink/70 ring-1 ring-black/5 hover:bg-paper-deep disabled:opacity-50"
+            className="inline-flex items-center gap-1.5 rounded-full bg-white dark:bg-shopfront px-4 py-2 text-xs font-semibold text-ink/70 ring-1 ring-black/5 dark:ring-white/5 hover:bg-paper-deep disabled:opacity-50"
           >
             <Download className="h-4 w-4" /> {t("dashboard.exportCsv")}
           </button>
           <button
             onClick={resetData}
             disabled={busy === "reset"}
-            className="ml-auto inline-flex items-center gap-1.5 rounded-full bg-white px-3 py-2 text-xs font-semibold text-terracotta ring-1 ring-terracotta/20 hover:bg-terracotta/10 disabled:opacity-50"
+            className="ml-auto inline-flex items-center gap-1.5 rounded-full bg-white dark:bg-shopfront px-3 py-2 text-xs font-semibold text-terracotta ring-1 ring-terracotta/20 hover:bg-terracotta/10 disabled:opacity-50"
           >
             <Trash2 className="h-4 w-4" /> {t("dashboard.resetData")}
           </button>
@@ -307,7 +307,7 @@ export function AddSaleModal({ onClose, onSubmit, t }) {
 
   return (
     <div className="fixed inset-0 z-50 grid place-items-center bg-black/40 p-4" onClick={onClose}>
-      <div className="w-full max-w-sm rounded-2xl bg-white p-6 shadow-xl" onClick={(e) => e.stopPropagation()}>
+      <div className="w-full max-w-sm rounded-2xl bg-white dark:bg-shopfront p-6 shadow-xl" onClick={(e) => e.stopPropagation()}>
         <div className="mb-4 flex items-center justify-between">
           <h3 className="font-display text-lg font-semibold text-shopfront">{t("dashboard.addSale")}</h3>
           <button onClick={onClose} className="text-ink/40 hover:text-ink"><X className="h-5 w-5" /></button>
@@ -352,7 +352,7 @@ export function Stat({ icon: Icon, label, value, sub, tone }) {
     terracotta: "bg-terracotta/10 text-terracotta",
   };
   return (
-    <div className="rounded-2xl bg-white p-5 shadow-[var(--shadow-card)] ring-1 ring-black/5">
+    <div className="rounded-2xl bg-white dark:bg-shopfront p-5 shadow-[var(--shadow-card)] ring-1 ring-black/5 dark:ring-white/5">
       <div className={`inline-grid h-10 w-10 place-items-center rounded-xl ${tones[tone]}`}>
         <Icon className="h-5 w-5" />
       </div>
@@ -365,7 +365,7 @@ export function Stat({ icon: Icon, label, value, sub, tone }) {
 
 export function Card({ title, icon: Icon, accent, children }) {
   return (
-    <section className="rounded-2xl bg-white p-5 shadow-[var(--shadow-card)] ring-1 ring-black/5">
+    <section className="rounded-2xl bg-white dark:bg-shopfront p-5 shadow-[var(--shadow-card)] ring-1 ring-black/5 dark:ring-white/5">
       <div className="mb-4 flex items-center justify-between">
         <h2 className="flex items-center gap-2 font-sans text-sm font-semibold uppercase tracking-wide text-shopfront">
           {Icon && <Icon className="h-4 w-4 text-terracotta" />} {title}

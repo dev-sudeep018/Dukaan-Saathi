@@ -60,7 +60,7 @@ function PhotoScreen() {
   }, [scanned]);
   return (
     <ScreenBody>
-      <div className="relative overflow-hidden rounded-xl border border-black/10 bg-[#fdf7e6] p-3 shadow-sm">
+      <div className="relative overflow-hidden rounded-xl border border-black/10 dark:border-white/10 bg-[#fdf7e6] p-3 shadow-sm">
         <div className="ledger-lines absolute inset-0 opacity-70" />
         <p className="relative mb-1 text-[10px] font-semibold uppercase tracking-wide text-terracotta/70">Aaj — 5 July</p>
         <ul className="relative space-y-1.5 font-body text-[13px] text-ink/80">
@@ -136,7 +136,7 @@ export default function HowItWorks() {
             className={`rounded-full px-5 py-2.5 font-sans text-sm font-semibold transition-all tap-highlight-none ${
               active === tab.key
                 ? "bg-shopfront text-paper shadow-[var(--shadow-card)]"
-                : "bg-white text-ink/70 ring-1 ring-black/5 hover:ring-terracotta/30"
+                : "bg-white dark:bg-shopfront text-ink/70 ring-1 ring-black/5 dark:ring-white/5 hover:ring-terracotta/30"
             }`}
           >
             {t(`how.${tab.key}.label`)}
@@ -149,7 +149,7 @@ export default function HowItWorks() {
           <motion.div key={active} initial={{ opacity: 0, x: -16 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 16 }} transition={{ duration: 0.35 }}>
             <h3 className="font-display text-2xl font-semibold text-shopfront sm:text-3xl">{t(`how.${active}.heading`)}</h3>
             <p className="mt-4 max-w-md font-body text-base leading-relaxed text-ink/70">{t(`how.${active}.body`)}</p>
-            <div className="mt-6 inline-flex items-center gap-2 rounded-xl border border-dashed border-terracotta/40 bg-white/60 px-4 py-3">
+            <div className="mt-6 inline-flex items-center gap-2 rounded-xl border border-dashed border-terracotta/40 bg-white dark:bg-shopfront/60 px-4 py-3">
               <TabIcon className="h-4 w-4 shrink-0 text-terracotta" />
               <span className="font-body text-sm italic text-ink/70">{t(`how.${active}.example`)}</span>
             </div>

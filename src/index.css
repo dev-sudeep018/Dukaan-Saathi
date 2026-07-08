@@ -18,16 +18,11 @@
 
   --shadow-card: 0 18px 40px -20px rgba(0, 0, 0, 0.7);
   --shadow-phone: 0 40px 80px -30px rgba(0, 0, 0, 0.8);
-
-  --color-white: var(--white);
-  --color-black: var(--black);
 }
 
 @custom-variant dark (&:where(.dark, .dark *));
 
 :root {
-  --white: #ffffff;
-  --black: #000000;
   --marigold: #F59E0B;
   --marigold-soft: #FDE68A;
   --shopfront: #0F172A;
@@ -42,8 +37,6 @@
 }
 
 :root.dark {
-  --white: #1E293B;
-  --black: #ffffff;
   --marigold: #F59E0B;
   --marigold-soft: #925C05;
   --shopfront: #1E293B;

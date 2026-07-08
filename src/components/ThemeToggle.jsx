@@ -7,7 +7,7 @@ export default function ThemeToggle() {
   return (
     <button
       onClick={toggleTheme}
-      className="grid h-10 w-10 place-items-center rounded-full text-ink opacity-70 transition-opacity hover:bg-black/5 hover:opacity-100 dark:hover:bg-white/10"
+      className="grid h-10 w-10 place-items-center rounded-full text-ink opacity-70 transition-opacity hover:bg-black/5 hover:opacity-100 dark:hover:bg-white dark:bg-shopfront/10"
       aria-label="Toggle Theme"
     >
       {theme === "dark" ? (

@@ -53,7 +53,7 @@ export default function SplashPage() {
         initial={{ opacity: 0 }}
         animate={{ opacity: step > 0 && step < 7 ? 0.6 : 0 }}
         onClick={handleFinish}
-        className="absolute right-6 top-6 z-50 rounded-full px-4 py-2 text-sm font-medium transition-colors hover:bg-white/10 hover:text-white"
+        className="absolute right-6 top-6 z-50 rounded-full px-4 py-2 text-sm font-medium transition-colors hover:bg-white dark:bg-shopfront/10 hover:text-white"
       >
         Skip &rarr;
       </motion.button>
@@ -72,7 +72,7 @@ export default function SplashPage() {
             <div className="absolute inset-x-2 bottom-0 top-6 flex flex-col gap-2 overflow-hidden px-2 pt-2">
               <motion.div 
                 animate={{ opacity: step >= 2 ? 1 : 0.2 }} 
-                className="h-1.5 w-full bg-white/20 rounded-full" 
+                className="h-1.5 w-full bg-white dark:bg-shopfront/20 rounded-full" 
               />
               <motion.div 
                 animate={{ opacity: step >= 2 ? 1 : 0.2 }} 
@@ -84,7 +84,7 @@ export default function SplashPage() {
               </motion.div>
               <motion.div 
                 animate={{ opacity: step >= 2 ? 1 : 0.2 }} 
-                className="h-1.5 w-full bg-white/20 rounded-full" 
+                className="h-1.5 w-full bg-white dark:bg-shopfront/20 rounded-full" 
               />
             </div>
 
@@ -93,7 +93,7 @@ export default function SplashPage() {
               initial={{ height: "85%" }}
               animate={{ height: step >= 2 ? "0%" : "85%" }}
               transition={{ duration: 1.5, ease: "easeInOut" }}
-              className="absolute bottom-0 left-0 right-0 origin-top bg-white/10 backdrop-blur-md border-t border-white/20"
+              className="absolute bottom-0 left-0 right-0 origin-top bg-white dark:bg-shopfront/10 backdrop-blur-md border-t border-white/20"
               style={{
                 backgroundImage: "repeating-linear-gradient(0deg, transparent, transparent 4px, rgba(255,255,255,0.05) 4px, rgba(255,255,255,0.05) 8px)"
               }}
@@ -116,7 +116,7 @@ export default function SplashPage() {
                 transition={{ type: "spring", damping: 10, stiffness: 100, duration: 0.8 }}
                 className="absolute top-5 left-1/2 -ml-8 flex flex-col items-center z-20"
               >
-                <div className="h-2 w-0.5 bg-white/40" />
+                <div className="h-2 w-0.5 bg-white dark:bg-shopfront/40" />
                 <div className="rounded border border-marigold/30 bg-[#1a1a1a] px-2 py-0.5 shadow-lg">
                   <span className="text-[6px] font-bold uppercase tracking-widest text-marigold whitespace-nowrap">Dukaan Saathi</span>
                 </div>
@@ -131,7 +131,7 @@ export default function SplashPage() {
                 initial={{ opacity: 0, y: 20, scale: 0 }}
                 animate={{ opacity: 1, y: -20, scale: 1 }}
                 transition={{ duration: 0.8, type: "spring" }}
-                className="absolute left-1/2 top-1/2 -ml-4 -mt-4 grid h-8 w-8 place-items-center rounded-full bg-white shadow-[0_0_20px_rgba(255,255,255,0.8)]"
+                className="absolute left-1/2 top-1/2 -ml-4 -mt-4 grid h-8 w-8 place-items-center rounded-full bg-white dark:bg-shopfront shadow-[0_0_20px_rgba(255,255,255,0.8)]"
               >
                 <Sparkles className="h-4 w-4 text-shopfront" />
               </motion.div>
@@ -195,7 +195,7 @@ export default function SplashPage() {
 
                 <button
                   onClick={handleFinish}
-                  className="group relative inline-flex items-center gap-3 rounded-full bg-white px-8 py-4 text-base font-bold text-shopfront transition-all hover:scale-105 hover:shadow-[0_0_40px_rgba(255,255,255,0.3)]"
+                  className="group relative inline-flex items-center gap-3 rounded-full bg-white dark:bg-shopfront px-8 py-4 text-base font-bold text-shopfront transition-all hover:scale-105 hover:shadow-[0_0_40px_rgba(255,255,255,0.3)]"
                 >
                   🚀 Get Started
                   <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" />
