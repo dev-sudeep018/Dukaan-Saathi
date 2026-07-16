@@ -5,12 +5,14 @@ import { Eye, EyeOff, ArrowLeft } from "lucide-react";
 import { api } from "../lib/api";
 import { useAuth } from "../lib/auth-context.js";
 import LanguageSwitcher from "../components/LanguageSwitcher";
+import { useToast } from "../components/Toast";
 import { motion } from "motion/react";
 
 export default function LoginPage() {
   const { t, i18n } = useTranslation();
   const { login } = useAuth();
   const navigate = useNavigate();
+  const toast = useToast();
 
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -79,6 +81,7 @@ export default function LoginPage() {
         });
       } else {
         login(res.token, res.shop, { persist: rememberMe });
+        toast.success(t("auth.login_success", "Welcome back!"));
         navigate("/app");
       }
     } catch (err) {
@@ -116,6 +119,7 @@ export default function LoginPage() {
         shop_address: googleAddress.trim(),
       });
       login(res.token, res.shop, { persist: rememberMe });
+      toast.success(t("auth.login_success", "Welcome back!"));
       navigate("/app");
     } catch (err) {
       setError(err.message);
@@ -137,6 +141,7 @@ export default function LoginPage() {
       const res = await api.login({ username: username.trim(), password });
       console.log("[LOGIN] Success:", res);
       login(res.token, res.shop, { persist: rememberMe });
+      toast.success(t("auth.login_success", "Welcome back!"));
       navigate("/app");
     } catch (err) {
       console.error("[LOGIN] Error:", err.message);

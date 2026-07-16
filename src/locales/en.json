@@ -211,7 +211,8 @@
     "newPin": "New PIN",
     "or": "or",
     "tryDemo": "Try a live demo (no signup)",
-    "demoShopName": "Demo Kirana Store"
+    "demoShopName": "Demo Kirana Store",
+    "login_success": "Welcome back!"
   },
   "dashboard": {
     "title": "Shop dashboard",
