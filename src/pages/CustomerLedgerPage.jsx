@@ -6,9 +6,10 @@ import {
   MapPin, Landmark, FileText, ArrowLeft, ArrowUpRight, ArrowDownLeft 
 } from "lucide-react";
 import { api } from "../lib/api";
+import AutoPayReminderModal from "../components/AutoPayReminderModal";
 
 export default function CustomerLedgerPage() {
-  const { money, t } = useOutletContext();
+  const { data, money, t } = useOutletContext();
   const [customers, setCustomers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -23,6 +24,7 @@ export default function CustomerLedgerPage() {
   const [bills, setBills] = useState([]);
   const [payments, setPayments] = useState([]);
   const [loadingDetail, setLoadingDetail] = useState(false);
+  const [showReminderModal, setShowReminderModal] = useState(false);
 
   // Active Bill Details Modal
   const [activeBill, setActiveBill] = useState(null);
@@ -295,6 +297,14 @@ export default function CustomerLedgerPage() {
                       Statements & Ledgers
                     </h3>
                     <div className="flex gap-2">
+                      {detailStats.totalOutstanding > 0 && (
+                        <button
+                          onClick={() => setShowReminderModal(true)}
+                          className="inline-flex items-center gap-1.5 rounded-full bg-paper px-3 py-1.5 text-xs font-semibold text-shopfront ring-1 ring-black/10 hover:bg-black/5 transition-all"
+                        >
+                          Send Reminder
+                        </button>
+                      )}
                       <button
                         onClick={handlePrint}
                         className="inline-flex items-center gap-1.5 rounded-full bg-paper px-3 py-1.5 text-xs font-semibold text-ink/75 ring-1 ring-black/5 hover:bg-paper-deep transition-all"
@@ -564,6 +574,15 @@ export default function CustomerLedgerPage() {
             </div>
           </div>
         </div>
+      )}
+
+      {showReminderModal && selectedCustomerDetail && (
+        <AutoPayReminderModal
+          customer={{...selectedCustomerDetail, outstanding: detailStats.totalOutstanding}}
+          shopName={data?.shop?.name}
+          money={money}
+          onClose={() => setShowReminderModal(false)}
+        />
       )}
     </div>
   );

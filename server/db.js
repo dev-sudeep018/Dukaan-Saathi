@@ -107,6 +107,7 @@ CREATE TABLE IF NOT EXISTS customers (
   upi_id     TEXT,
   address    TEXT,
   notes      TEXT,
+  due_date   TEXT,
   created_at TEXT NOT NULL DEFAULT (datetime('now'))
 );
 CREATE INDEX IF NOT EXISTS idx_customers_shop ON customers(shop_id, name_norm);
@@ -211,7 +212,9 @@ CREATE TABLE IF NOT EXISTS reminders (
   message        TEXT NOT NULL,
   amount         REAL NOT NULL,
   sent_via       TEXT NOT NULL,
-  status         TEXT NOT NULL DEFAULT 'sent'
+  status         TEXT NOT NULL DEFAULT 'sent',
+  trigger_type   TEXT,
+  created_at     TEXT NOT NULL DEFAULT (datetime('now'))
 );
 
 CREATE TABLE IF NOT EXISTS notifications (
@@ -240,7 +243,16 @@ async function applyMigrations() {
   const appliedRows = await db.prepare("SELECT name FROM schema_migrations").all();
   const applied = new Set(appliedRows.map((row) => row.name));
 
-  const migrationFiles = ["001-owner-profiles.js", "002-customer-details.js", "003-payment-details.js", "004-shop-upi.js", "005-reminder-history.js", "006-auth-columns.js"];
+  const migrationFiles = [
+    "001-owner-profiles.js", 
+    "002-customer-details.js", 
+    "003-payment-details.js", 
+    "004-shop-upi.js", 
+    "005-reminder-history.js", 
+    "006-auth-columns.js",
+    "007-customer-due-date.js",
+    "008-reminder-trigger.js"
+  ];
   for (const file of migrationFiles) {
     if (applied.has(file)) continue;
     const migration = await import(`./migrations/${file}`);

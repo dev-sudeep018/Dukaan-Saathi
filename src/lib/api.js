@@ -124,6 +124,8 @@ export const api = {
   getLedgerList: () => request("/dashboard/ledger"),
   getLedgerDetail: (customerId) => request(`/dashboard/ledger/${customerId}`),
   getReminderHistory: () => request("/dashboard/reminders/history"),
+  getPendingReminders: () => request("/dashboard/reminders/pending"),
+  markReminderSent: (id) => request(`/dashboard/reminders/${id}/sent`, { method: "PUT" }),
   sendReminder: (payload) => request("/dashboard/reminders/send", { method: "POST", body: payload }),
   sendBulkReminders: (payload) => request("/dashboard/reminders/send-all", { method: "POST", body: payload }),
   // Customer CRUD

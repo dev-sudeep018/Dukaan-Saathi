@@ -111,6 +111,31 @@ dataRouter.post("/lang", async (req, res) => {
   res.json({ ok: true, lang });
 });
 
+// GET pending reminders
+dataRouter.get("/reminders/pending", async (req, res) => {
+  const shopId = req.shop.id;
+  const reminders = await db.prepare(`
+    SELECT r.*, c.name as customer_name, c.phone as customer_phone, c.upi_id as customer_upi_id
+    FROM reminders r
+    JOIN customers c ON r.customer_id = c.id
+    WHERE r.shop_id = ? AND r.status = 'pending'
+    ORDER BY r.created_at DESC
+  `).all(shopId);
+  res.json(reminders);
+});
+
+// Mark reminder as sent
+dataRouter.put("/reminders/:id/sent", async (req, res) => {
+  const shopId = req.shop.id;
+  const { id } = req.params;
+  
+  await db.prepare(
+    "UPDATE reminders SET status = 'sent' WHERE id = ? AND shop_id = ?"
+  ).run(id, shopId);
+  
+  res.json({ ok: true });
+});
+
 /* Record a sale entered manually from the dashboard. Reuses the same
    executeIntent pipeline as the chat so stock, udhaar and profit stay
    consistent no matter how the sale was entered. */
@@ -251,12 +276,19 @@ dataRouter.get("/customers", async (req, res) => {
 /* Create a new customer */
 dataRouter.post("/customers", async (req, res) => {
   const shopId = req.shop.id;
-  const { name, phone, upi_id, address, notes } = req.body || {};
+  const { name, phone, upi_id, address, notes, due_date } = req.body || {};
   if (!(name || "").trim()) {
     return res.status(400).json({ error: "Customer name is required" });
   }
 
   const normalizedPhone = normalizePhone(phone) || null;
+
+  if (upi_id && upi_id.trim()) {
+    const upiRegex = /^[a-zA-Z0-9.\-_]{2,256}@[a-zA-Z]{2,64}$/;
+    if (!upiRegex.test(upi_id.trim())) {
+      return res.status(400).json({ error: "Invalid UPI ID format. Example: customer@oksbi" });
+    }
+  }
 
   if (normalizedPhone) {
     const existing = await db.prepare(
@@ -270,8 +302,8 @@ dataRouter.post("/customers", async (req, res) => {
   const norm = normalize(name);
   try {
     const result = await db.prepare(
-      `INSERT INTO customers (shop_id, name, name_norm, phone, upi_id, address, notes)
-       VALUES (?, ?, ?, ?, ?, ?, ?)`
+      `INSERT INTO customers (shop_id, name, name_norm, phone, upi_id, address, notes, due_date)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?)`
     ).run(
       shopId,
       name.trim(),
@@ -279,7 +311,8 @@ dataRouter.post("/customers", async (req, res) => {
       normalizedPhone,
       (upi_id || "").trim() || null,
       (address || "").trim() || null,
-      (notes || "").trim() || null
+      (notes || "").trim() || null,
+      (due_date || "").trim() || null
     );
 
     const customer = await db.prepare("SELECT * FROM customers WHERE id = ?").get(result.lastInsertRowid);
@@ -306,7 +339,7 @@ dataRouter.delete("/customers/:id", async (req, res) => {
 dataRouter.put("/customers/:id", async (req, res) => {
   const shopId = req.shop.id;
   const { id } = req.params;
-  const { name, phone, upi_id, address, notes } = req.body || {};
+  const { name, phone, upi_id, address, notes, due_date } = req.body || {};
   const existing = await db.prepare("SELECT * FROM customers WHERE id = ? AND shop_id = ?").get(id, shopId);
   if (!existing) {
     return res.status(404).json({ error: "Customer not found" });
@@ -315,6 +348,14 @@ dataRouter.put("/customers/:id", async (req, res) => {
     return res.status(400).json({ error: "Customer name cannot be empty" });
   }
   const normalizedPhone = phone ? normalizePhone(phone) : existing.phone;
+  
+  if (upi_id !== undefined && upi_id !== null && upi_id.trim()) {
+    const upiRegex = /^[a-zA-Z0-9.\-_]{2,256}@[a-zA-Z]{2,64}$/;
+    if (!upiRegex.test(upi_id.trim())) {
+      return res.status(400).json({ error: "Invalid UPI ID format. Example: customer@oksbi" });
+    }
+  }
+
   if (normalizedPhone) {
     const dup = await db.prepare("SELECT * FROM customers WHERE shop_id = ? AND phone = ? AND id != ?").get(shopId, normalizedPhone, id);
     if (dup) {
@@ -322,7 +363,7 @@ dataRouter.put("/customers/:id", async (req, res) => {
     }
   }
   const normName = name ? normalize(name) : existing.name_norm;
-  await db.prepare(`UPDATE customers SET name = ?, name_norm = ?, phone = ?, upi_id = ?, address = ?, notes = ? WHERE id = ?`)
+  await db.prepare(`UPDATE customers SET name = ?, name_norm = ?, phone = ?, upi_id = ?, address = ?, notes = ?, due_date = ? WHERE id = ?`)
     .run(
       name ? name.trim() : existing.name,
       normName,
@@ -330,6 +371,7 @@ dataRouter.put("/customers/:id", async (req, res) => {
       upi_id !== undefined ? (upi_id || null) : existing.upi_id,
       address !== undefined ? (address || null) : existing.address,
       notes !== undefined ? (notes || null) : existing.notes,
+      due_date !== undefined ? (due_date || null) : existing.due_date,
       id
     );
   const updated = await db.prepare("SELECT * FROM customers WHERE id = ?").get(id);
@@ -407,7 +449,7 @@ dataRouter.get("/reminders/history", async (req, res) => {
   const shopId = req.shop.id;
   try {
     const rows = await db.prepare(
-      `SELECT r.*, c.name AS customer_name, c.phone AS customer_phone
+      `SELECT r.*, c.name AS customer_name, c.phone AS customer_phone, c.due_date AS customer_due_date
        FROM reminders r
        LEFT JOIN customers c ON c.id = r.customer_id
        WHERE r.shop_id = ?
@@ -465,7 +507,7 @@ dataRouter.put("/products/:id", async (req, res) => {
   const shopId = req.shop.id;
   const { id } = req.params;
   const {
-    name, stock_qty, unit,
+    name, category, stock_qty, unit,
     purchase_price, selling_price, supplier,
     expiry_date, batch_number, barcode, low_stock_threshold,
   } = req.body || {};
@@ -488,6 +530,7 @@ dataRouter.put("/products/:id", async (req, res) => {
     return res.status(400).json({ error: "Valid selling price is required." });
   }
 
+  const updatedCategory  = category !== undefined ? (category.trim() || null) : existing.category;
   const updatedName      = name !== undefined ? name.trim() : existing.name;
   const updatedNameNorm  = name !== undefined ? normalize(name.trim()) : existing.name_norm;
   const updatedUnit      = unit !== undefined ? (unit.toString().trim() || "unit") : existing.unit;
@@ -503,13 +546,13 @@ dataRouter.put("/products/:id", async (req, res) => {
   try {
     await db.prepare(
       `UPDATE products SET
-         name = ?, name_norm = ?, unit = ?, stock_qty = ?,
+         name = ?, name_norm = ?, category = ?, unit = ?, stock_qty = ?,
          cost_price = ?, sell_price = ?, purchase_price = ?, selling_price = ?,
          supplier = ?, expiry_date = ?, batch_number = ?, barcode = ?,
          low_stock_threshold = ?
        WHERE id = ? AND shop_id = ?`
     ).run(
-      updatedName, updatedNameNorm, updatedUnit, updatedStockQty,
+      updatedName, updatedNameNorm, updatedCategory, updatedUnit, updatedStockQty,
       updatedCostPrice, updatedSellPrice, updatedCostPrice, updatedSellPrice,
       updatedSupplier, updatedExpiry, updatedBatch, updatedBarcode,
       updatedThreshold, id, shopId
@@ -550,14 +593,15 @@ dataRouter.post("/products", async (req, res) => {
   try {
     const result = await db.prepare(
       `INSERT INTO products
-         (shop_id, name, name_norm, unit, stock_qty,
+         (shop_id, name, name_norm, category, unit, stock_qty,
           cost_price, sell_price, purchase_price, selling_price,
           supplier, expiry_date, batch_number, barcode, low_stock_threshold)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
     ).run(
       shopId,
       name.trim(),
       nameNorm,
+      (category || "").trim() || null,
       (unit || "unit").toString().trim() || "unit",
       Number(stock_qty),
       Number(purchase_price),

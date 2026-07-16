@@ -9,6 +9,7 @@ import { dataRouter } from "./routes/data.js";
 import { simulateRouter } from "./routes/simulate.js";
 import { connectionsRouter } from "./routes/connections.js";
 import { creditRouter } from "./routes/credit.js";
+import { startScheduler } from "./scheduler.js";
 
 const app = express();
 app.use(cors());
@@ -43,6 +44,7 @@ dbReady
       console.log(`\n🟢 Dukaan Saathi backend on http://localhost:${config.port}`);
       logStartupFlags();
       console.log("");
+      startScheduler();
     });
   })
   .catch((err) => {

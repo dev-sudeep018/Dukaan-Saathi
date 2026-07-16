@@ -26,6 +26,7 @@ import CreditPage from "./pages/CreditPage";
 import NotificationCenterPage from "./pages/NotificationCenterPage";
 import CustomerLedgerPage from "./pages/CustomerLedgerPage";
 import CustomerDetailsPage from "./pages/CustomerDetailsPage";
+import ReminderHistoryPage from "./pages/ReminderHistoryPage";
 
 function RequireAuth({ children }) {
   const { isAuthed } = useAuth();
@@ -72,6 +73,7 @@ export default function App() {
         <Route path="udhaar" element={<UdhaarPage />} />
         <Route path="ledger" element={<CustomerLedgerPage />} />
         <Route path="customer/:id" element={<CustomerDetailsPage />} />
+        <Route path="reminders" element={<ReminderHistoryPage />} />
         <Route path="reports" element={<ReportsPage />} />
         <Route path="coach" element={<BusinessCoachPage />} />
         <Route path="voice" element={<VoiceAssistantPage />} />

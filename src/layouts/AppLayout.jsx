@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next";
 import { api } from "../lib/api";
 import {
   LayoutDashboard, ShoppingBag, Package, Users, Receipt, PieChart,
-  Target, Mic, Scan, Settings, Info, LogOut, Sparkles, Store, Bell, BookOpen
+  Target, Mic, Scan, Settings, Info, LogOut, Sparkles, Store, Bell, BookOpen, History
 } from "lucide-react";
 import { useAuth } from "../lib/auth-context";
 import LanguageSwitcher from "../components/LanguageSwitcher";
@@ -63,6 +63,7 @@ export default function AppLayout() {
     { name: "Inventory", path: "/app/inventory", icon: Package },
     { name: "Udhaar", path: "/app/udhaar", icon: Users },
     { name: "Customer Ledger", path: "/app/ledger", icon: BookOpen },
+    { name: "Reminder History", path: "/app/reminders", icon: History },
     { name: "Reports", path: "/app/reports", icon: PieChart },
     { name: "Business Coach", path: "/app/coach", icon: Target },
     { name: "Voice Assistant", path: "/app/voice", icon: Mic },

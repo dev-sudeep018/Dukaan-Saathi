@@ -88,6 +88,14 @@ export default function CustomerSearchSelector({ selectedCustomer, onSelect, t }
       return;
     }
 
+    if (newCust.upi_id.trim()) {
+      const upiRegex = /^[a-zA-Z0-9.\-_]{2,256}@[a-zA-Z]{2,64}$/;
+      if (!upiRegex.test(newCust.upi_id.trim())) {
+        setError("Invalid UPI ID format. Example: customer@oksbi");
+        return;
+      }
+    }
+
     setSaving(true);
     try {
       const res = await api.createCustomer({

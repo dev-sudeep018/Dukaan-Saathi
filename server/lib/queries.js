@@ -170,7 +170,7 @@ export async function salesFeed(shopId, limit = 25) {
 export async function inventory(shopId) {
   return db
     .prepare(
-      `SELECT id, name, unit, stock_qty, cost_price, sell_price,
+      `SELECT id, name, category, unit, stock_qty, cost_price, sell_price,
               supplier, purchase_price, selling_price, expiry_date, batch_number,
               barcode, qr_code, low_stock_threshold
        FROM products WHERE shop_id = ? ORDER BY stock_qty ASC, name ASC`,

@@ -1,9 +1,11 @@
 import { useEffect, useState, useMemo } from "react";
-import { useParams, useNavigate, Link } from "react-router-dom";
-import { Users, Phone, MapPin, Landmark, Info, Edit, Trash2, BookOpen, Printer, Calendar, ArrowUpRight, ArrowDownLeft } from "lucide-react";
+import { useParams, useNavigate, Link, useOutletContext } from "react-router-dom";
+import { Users, Phone, MapPin, Landmark, Info, Edit, Trash2, BookOpen, Printer, Calendar, ArrowUpRight, ArrowDownLeft, X, Send } from "lucide-react";
 import { api } from "../lib/api";
+import AutoPayReminderModal from "../components/AutoPayReminderModal";
 
 export default function CustomerDetailsPage() {
+  const { data, money } = useOutletContext();
   const { id } = useParams(); // customer id from URL
   const navigate = useNavigate();
   const [customer, setCustomer] = useState(null);
@@ -12,6 +14,12 @@ export default function CustomerDetailsPage() {
   const [reminders, setReminders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+
+  const [isEditing, setIsEditing] = useState(false);
+  const [editForm, setEditForm] = useState({ name: "", phone: "", upi_id: "", address: "", notes: "" });
+  const [editError, setEditError] = useState("");
+  const [savingEdit, setSavingEdit] = useState(false);
+  const [showReminderModal, setShowReminderModal] = useState(false);
 
   // Fetch customer ledger detail
   useEffect(() => {
@@ -65,6 +73,50 @@ export default function CustomerDetailsPage() {
 
   const handlePrint = () => {
     window.print();
+  };
+
+  const handleEditClick = () => {
+    setEditForm({
+      name: customer.name || "",
+      phone: customer.phone || "",
+      upi_id: customer.upi_id || "",
+      address: customer.address || "",
+      notes: customer.notes || ""
+    });
+    setEditError("");
+    setIsEditing(true);
+  };
+
+  const handleSaveEdit = async (e) => {
+    e.preventDefault();
+    setEditError("");
+    if (!editForm.name.trim()) {
+      setEditError("Name is required");
+      return;
+    }
+    if (editForm.upi_id.trim()) {
+      const upiRegex = /^[a-zA-Z0-9.\-_]{2,256}@[a-zA-Z]{2,64}$/;
+      if (!upiRegex.test(editForm.upi_id.trim())) {
+        setEditError("Invalid UPI ID format. Example: customer@oksbi");
+        return;
+      }
+    }
+    setSavingEdit(true);
+    try {
+      const res = await api.updateCustomer(id, {
+        name: editForm.name.trim(),
+        phone: editForm.phone.trim() || undefined,
+        upi_id: editForm.upi_id.trim() || undefined,
+        address: editForm.address.trim() || undefined,
+        notes: editForm.notes.trim() || undefined
+      });
+      setCustomer(res.customer);
+      setIsEditing(false);
+    } catch (err) {
+      setEditError(err.message || "Failed to update customer");
+    } finally {
+      setSavingEdit(false);
+    }
   };
 
   if (loading) {
@@ -144,7 +196,15 @@ export default function CustomerDetailsPage() {
 
       {/* Action Toolbar */}
       <div className="flex flex-wrap items-center gap-3 rounded-2xl bg-white p-4 shadow-[var(--shadow-card)] ring-1 ring-black/5 no-print">
-        <button onClick={() => {/* placeholder edit */}} className="inline-flex items-center gap-1.5 rounded-full bg-shopfront px-3 py-1.5 text-xs font-semibold text-paper hover:bg-shopfront-700 transition-all">
+        {outstanding > 0 && (
+          <button 
+            onClick={() => setShowReminderModal(true)} 
+            className="inline-flex items-center gap-1.5 rounded-full bg-paper px-3 py-1.5 text-xs font-semibold text-shopfront ring-1 ring-black/10 hover:bg-black/5 transition-all"
+          >
+            <Send className="h-3.5 w-3.5 text-marigold" /> Send Reminder
+          </button>
+        )}
+        <button onClick={handleEditClick} className="inline-flex items-center gap-1.5 rounded-full bg-shopfront px-3 py-1.5 text-xs font-semibold text-paper hover:bg-shopfront-700 transition-all">
           <Edit className="h-3.5 w-3.5" /> Edit Customer
         </button>
         <button onClick={handleDelete} className="inline-flex items-center gap-1.5 rounded-full bg-terracotta-600 px-3 py-1.5 text-xs font-semibold text-paper hover:bg-terracotta-700 transition-all">
@@ -197,6 +257,85 @@ export default function CustomerDetailsPage() {
           <div className="text-sm text-ink/40">No reminder sent yet.</div>
         )}
       </div>
+
+      {/* Edit Customer Modal */}
+      {isEditing && (
+        <div className="fixed inset-0 z-[100] grid place-items-center bg-black/40 p-4" onClick={() => setIsEditing(false)}>
+          <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl relative" onClick={(e) => e.stopPropagation()}>
+            <div className="mb-4 flex items-center justify-between border-b border-black/5 pb-3">
+              <h3 className="font-display text-lg font-bold text-shopfront">Edit Customer</h3>
+              <button 
+                onClick={() => setIsEditing(false)} 
+                className="text-ink/40 hover:text-ink rounded-full bg-paper p-1 transition-colors"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+            
+            <form onSubmit={handleSaveEdit} className="space-y-4">
+              <div className="space-y-3">
+                <input
+                  type="text"
+                  placeholder="Name *"
+                  className="w-full rounded-lg border border-black/10 bg-white px-3 py-2 text-sm outline-none focus:border-marigold"
+                  value={editForm.name}
+                  onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
+                  required
+                />
+                <input
+                  type="tel"
+                  placeholder="Mobile Number"
+                  className="w-full rounded-lg border border-black/10 bg-white px-3 py-2 text-sm outline-none focus:border-marigold"
+                  value={editForm.phone}
+                  onChange={(e) => setEditForm({ ...editForm, phone: e.target.value })}
+                />
+                <input
+                  type="text"
+                  placeholder="UPI ID (Optional)"
+                  className="w-full rounded-lg border border-black/10 bg-white px-3 py-2 text-sm outline-none focus:border-marigold"
+                  value={editForm.upi_id}
+                  onChange={(e) => setEditForm({ ...editForm, upi_id: e.target.value })}
+                />
+                <input
+                  type="text"
+                  placeholder="Address (Optional)"
+                  className="w-full rounded-lg border border-black/10 bg-white px-3 py-2 text-sm outline-none focus:border-marigold"
+                  value={editForm.address}
+                  onChange={(e) => setEditForm({ ...editForm, address: e.target.value })}
+                />
+                <textarea
+                  placeholder="Notes (Optional)"
+                  rows={2}
+                  className="w-full rounded-lg border border-black/10 bg-white px-3 py-2 text-sm outline-none focus:border-marigold resize-none"
+                  value={editForm.notes}
+                  onChange={(e) => setEditForm({ ...editForm, notes: e.target.value })}
+                />
+              </div>
+
+              {editError && (
+                <p className="rounded-lg bg-terracotta/10 px-3 py-2 text-xs text-terracotta">{editError}</p>
+              )}
+
+              <button
+                type="submit"
+                disabled={savingEdit}
+                className="w-full rounded-full bg-marigold py-2.5 text-sm font-semibold text-shopfront hover:bg-marigold/90 disabled:opacity-50 transition-colors"
+              >
+                {savingEdit ? "Saving..." : "Save Changes"}
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {showReminderModal && (
+        <AutoPayReminderModal
+          customer={{...customer, outstanding}}
+          shopName={data?.shop?.name}
+          money={money}
+          onClose={() => setShowReminderModal(false)}
+        />
+      )}
     </div>
   );
 }

@@ -3,11 +3,13 @@ import { useOutletContext } from "react-router-dom";
 import { Users, Plus, Landmark, QrCode, Copy, Check, X, Send, History, MessageSquare, PhoneCall } from "lucide-react";
 import { Card, Empty, AddSaleModal } from "./DashboardPage";
 import { api } from "../lib/api";
+import AutoPayReminderModal from "../components/AutoPayReminderModal";
 
 export default function UdhaarPage() {
   const { data, load, money, t } = useOutletContext();
   const [showAddSale, setShowAddSale] = useState(false);
   const [activeUpiCustomer, setActiveUpiCustomer] = useState(null);
+  const [reminderModalCustomer, setReminderModalCustomer] = useState(null);
   const [showReminders, setShowReminders] = useState(false);
 
   const submitSale = async (sale) => {
@@ -52,6 +54,12 @@ export default function UdhaarPage() {
                         <span className="text-sm text-ink/50 uppercase tracking-wide">Due</span>
                         <span className="text-lg font-bold text-terracotta">{money(c.outstanding)}</span>
                       </div>
+                      <button 
+                        onClick={() => setReminderModalCustomer(c)}
+                        className="rounded-full bg-paper px-4 py-2 text-sm font-semibold text-shopfront ring-1 ring-black/10 hover:bg-black/5 hover:shadow-sm transition-all"
+                      >
+                        Send Reminder
+                      </button>
                       <button 
                         onClick={() => setActiveUpiCustomer(c)} 
                         className="rounded-full bg-leaf px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-leaf/90 hover:shadow transition-all"
@@ -111,6 +119,15 @@ export default function UdhaarPage() {
           load={load}
           money={money}
           onClose={() => setShowReminders(false)}
+        />
+      )}
+
+      {reminderModalCustomer && (
+        <AutoPayReminderModal
+          customer={reminderModalCustomer}
+          shopName={data?.shop?.name}
+          money={money}
+          onClose={() => setReminderModalCustomer(null)}
         />
       )}
     </div>
@@ -371,6 +388,25 @@ function SendRemindersModal({ data, load, money, onClose }) {
   const [loadingHistory, setLoadingHistory] = useState(false);
   const [sending, setSending] = useState(false);
   const [successMsg, setSuccessMsg] = useState("");
+  const [reminderFilter, setReminderFilter] = useState("all"); // all | pending | sent | overdue
+  const [filteredHistory, setFilteredHistory] = useState([]);
+
+  // Recompute filtered history when history or filter changes
+  useEffect(() => {
+    const today = new Date();
+    const filtered = history.filter((log) => {
+      const status = log.status; // 'pending' or 'sent'
+      const dueDateStr = log.customer_due_date; // may be null
+      const dueDate = dueDateStr ? new Date(dueDateStr) : null;
+      const isOverdue = status === "pending" && dueDate && dueDate < today;
+      if (reminderFilter === "all") return true;
+      if (reminderFilter === "pending") return status === "pending" && !isOverdue;
+      if (reminderFilter === "sent") return status === "sent";
+      if (reminderFilter === "overdue") return isOverdue;
+      return true;
+    });
+    setFilteredHistory(filtered);
+  }, [history, reminderFilter]);
 
   const pendingCustomers = useMemo(() => {
     return (data?.dues?.customers || []).filter(c => c.outstanding > 0);
@@ -685,10 +721,24 @@ Thank you.`;
         {/* Tab 2: Reminder History Logs */}
         {activeTab === "history" && (
           <div className="flex-1 overflow-hidden flex flex-col min-h-0">
+            {/* Filter controls */}
+            <div className="flex items-center justify-between px-4 py-2 bg-paper border-b border-black/5">
+              <span className="font-medium text-ink/75">Reminder History</span>
+              <select
+                value={reminderFilter}
+                onChange={(e) => setReminderFilter(e.target.value)}
+                className="rounded border border-black/10 bg-white text-sm px-2 py-1"
+              >
+                <option value="all">All</option>
+                <option value="pending">Pending</option>
+                <option value="sent">Paid</option>
+                <option value="overdue">Overdue</option>
+              </select>
+            </div>
             <div className="flex-1 overflow-y-auto rounded-xl border border-black/5 custom-scrollbar">
               {loadingHistory ? (
                 <div className="py-12 text-center text-ink/40">Loading log history…</div>
-              ) : history.length > 0 ? (
+              ) : filteredHistory.length > 0 ? (
                 <table className="w-full text-left text-sm border-collapse">
                   <thead>
                     <tr className="border-b border-black/5 bg-paper text-xs text-ink/50 uppercase font-semibold">
@@ -700,7 +750,7 @@ Thank you.`;
                     </tr>
                   </thead>
                   <tbody>
-                    {history.map((log) => (
+                    {filteredHistory.map((log) => (
                       <tr key={log.id} className="border-b border-black/5 hover:bg-black/[0.01] transition-colors text-xs">
                         <td className="py-2.5 px-4 font-mono text-ink/50">{formatDate(log.created_at)}</td>
                         <td className="py-2.5 px-2 font-semibold capitalize text-shopfront">{log.customer_name}</td>
@@ -720,7 +770,7 @@ Thank you.`;
                   </tbody>
                 </table>
               ) : (
-                <div className="py-12 text-center text-ink/40">No sent reminder history found in database logs.</div>
+                <div className="py-12 text-center text-ink/40">No reminder history matches the selected filter.</div>
               )}
             </div>
           </div>
