@@ -40,6 +40,7 @@ export function ToastProvider({ children }) {
       try {
         const token = sessionStorage.getItem("dukaan_token") || localStorage.getItem("dukaan_token");
         if (!token) return;
+        if (!window.location.pathname.startsWith("/app")) return;
         const res = await fetch("/api/credit/notifications/recent", {
           headers: { Authorization: `Bearer ${token}` },
         });
