@@ -1,14 +1,16 @@
 import { useState, useEffect } from "react";
 import { useOutletContext, useNavigate } from "react-router-dom";
-import { User, LogOut, Save, Globe, Store, Phone, Mail, MapPin, Image as ImageIcon, Briefcase } from "lucide-react";
+import { User, LogOut, Save, Globe, Store, Phone, Mail, MapPin, Image as ImageIcon, Briefcase, AlertTriangle } from "lucide-react";
 import { Card } from "./DashboardPage";
 import { useAuth } from "../lib/auth-context";
 import { api } from "../lib/api";
+import { useToast } from "../components/Toast";
 
 export default function SettingsPage() {
-  const { t } = useOutletContext();
+  const { t, load } = useOutletContext();
   const { shop, logout, login } = useAuth();
   const navigate = useNavigate();
+  const toast = useToast();
 
   const [form, setForm] = useState({
     shop_name: "",
@@ -23,6 +25,25 @@ export default function SettingsPage() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+  const [showConfirmReset, setShowConfirmReset] = useState(false);
+  const [confirmResetText, setConfirmResetText] = useState("");
+
+  const handleResetAllData = async () => {
+    setBusy("reset");
+    setError("");
+    try {
+      await api.resetData();
+      toast.success("Your shop data has been reset successfully.");
+      setShowConfirmReset(false);
+      setConfirmResetText("");
+      await load();
+      navigate("/app/dashboard");
+    } catch (err) {
+      toast.error(err.message || "Failed to reset shop data");
+    } finally {
+      setBusy(false);
+    }
+  };
 
   // Initialize form with current shop data
   useEffect(() => {
@@ -206,7 +227,86 @@ export default function SettingsPage() {
             <LogOut className="h-4 w-4" /> Log Out
           </button>
         </Card>
+
+        {/* Danger Zone */}
+        <Card title="⚠ Danger Zone" icon={AlertTriangle}>
+          <div className="max-w-md space-y-4">
+            <p className="text-sm text-ink/60">
+              Resetting your shop data will permanently delete all business records associated with your account.
+            </p>
+            <p className="text-sm text-terracotta font-semibold">
+              This action cannot be undone.
+            </p>
+            <button
+              type="button"
+              onClick={() => setShowConfirmReset(true)}
+              className="inline-flex items-center gap-2 rounded-full border border-terracotta/30 bg-terracotta/5 px-5 py-2.5 text-sm font-semibold text-terracotta hover:bg-terracotta hover:text-white transition-colors"
+            >
+              Reset All Shop Data
+            </button>
+          </div>
+        </Card>
       </div>
+
+      {showConfirmReset && (
+        <div
+          className="fixed inset-0 z-50 grid place-items-center bg-black/40 p-4"
+          onClick={() => {
+            setShowConfirmReset(false);
+            setConfirmResetText("");
+          }}
+        >
+          <div className="w-full max-w-sm rounded-2xl bg-white p-6 shadow-xl" onClick={(e) => e.stopPropagation()}>
+            <h3 className="font-display text-lg font-bold text-shopfront mb-2">Reset All Shop Data?</h3>
+            <p className="text-sm text-ink/75 mb-3">This action will permanently delete:</p>
+            <ul className="text-sm text-ink/60 list-disc list-inside space-y-1 mb-4">
+              <li>Sales</li>
+              <li>Customers</li>
+              <li>Inventory</li>
+              <li>Udhaar Records</li>
+              <li>Reports</li>
+              <li>Notifications</li>
+              <li>Dashboard Statistics</li>
+            </ul>
+            <p className="text-sm text-terracotta font-semibold mb-4">This action cannot be undone.</p>
+            
+            <div className="mb-4">
+              <label className="block text-xs font-medium text-ink/60 mb-1.5">
+                Type <span className="font-bold text-terracotta select-all">RESET</span> to confirm:
+              </label>
+              <input
+                type="text"
+                value={confirmResetText}
+                onChange={(e) => setConfirmResetText(e.target.value)}
+                placeholder="RESET"
+                className="w-full rounded-xl border border-black/15 bg-paper px-4 py-2 text-sm text-shopfront outline-none focus:border-terracotta focus:ring-2 focus:ring-terracotta/20"
+              />
+            </div>
+
+            <div className="flex justify-end gap-3">
+              <button
+                type="button"
+                disabled={busy === "reset"}
+                onClick={() => {
+                  setShowConfirmReset(false);
+                  setConfirmResetText("");
+                }}
+                className="rounded-full bg-paper px-5 py-2 text-sm font-semibold text-ink/70 hover:bg-paper-deep transition-colors disabled:opacity-50"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                disabled={confirmResetText !== "RESET" || busy === "reset"}
+                onClick={handleResetAllData}
+                className="rounded-full bg-terracotta px-5 py-2 text-sm font-semibold text-white hover:bg-terracotta/90 transition-colors disabled:opacity-50"
+              >
+                {busy === "reset" ? "Resetting…" : "Reset"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

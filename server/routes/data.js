@@ -170,8 +170,20 @@ dataRouter.post("/demo", async (req, res) => {
 
 /* Wipe the current shop's transactional data (keeps the login). */
 dataRouter.post("/reset", async (req, res) => {
-  await clearShopData(req.shop.id);
-  res.json({ ok: true });
+  const shopId = req.shop?.id;
+  if (!shopId) {
+    return res.status(401).json({ error: "Unauthorized: Missing shop context" });
+  }
+  try {
+    const shop = await db.prepare("SELECT * FROM shops WHERE id = ?").get(shopId);
+    if (!shop) {
+      return res.status(404).json({ error: "Shop not found" });
+    }
+    await clearShopData(shopId);
+    res.json({ ok: true, message: "Shop data has been reset successfully" });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
 /* Export the shop's data as CSV (sales, with customer + payment type). */
