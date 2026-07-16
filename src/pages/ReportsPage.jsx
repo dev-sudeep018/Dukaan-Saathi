@@ -169,19 +169,19 @@ export default function ReportsPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col gap-3 rounded-3xl bg-white p-5 shadow-[var(--shadow-card)] ring-1 ring-black/5 sm:flex-row sm:items-end sm:justify-between">
-        <div>
-          <h1 className="font-display text-2xl font-bold text-shopfront">Reports & Analytics</h1>
-          <p className="mt-1 text-sm text-ink/60">Generate concise operational reports and export them as PDF, Excel, or CSV.</p>
+      <div className="flex flex-col gap-4 rounded-3xl bg-white p-5 shadow-[var(--shadow-card)] ring-1 ring-black/5 sm:flex-row sm:items-end sm:justify-between">
+        <div className="min-w-0">
+          <h1 className="font-display text-2xl font-bold text-shopfront truncate">Reports & Analytics</h1>
+          <p className="mt-1 text-sm text-ink/60">Generate concise operational reports and export them.</p>
         </div>
         <div className="flex flex-wrap gap-2">
-          <button onClick={() => exportReport("csv")} className="inline-flex items-center gap-2 rounded-full bg-paper px-3 py-2 text-sm font-medium text-ink/70 ring-1 ring-black/5">
+          <button onClick={() => exportReport("csv")} className="inline-flex items-center gap-2 rounded-full bg-paper px-3 py-2.5 text-sm font-medium text-ink/70 ring-1 ring-black/5 active:scale-95 transition-transform">
             <FileDown className="h-4 w-4" /> CSV
           </button>
-          <button onClick={() => exportReport("excel")} className="inline-flex items-center gap-2 rounded-full bg-paper px-3 py-2 text-sm font-medium text-ink/70 ring-1 ring-black/5">
+          <button onClick={() => exportReport("excel")} className="inline-flex items-center gap-2 rounded-full bg-paper px-3 py-2.5 text-sm font-medium text-ink/70 ring-1 ring-black/5 active:scale-95 transition-transform">
             <FileSpreadsheet className="h-4 w-4" /> Excel
           </button>
-          <button onClick={() => exportReport("pdf")} className="inline-flex items-center gap-2 rounded-full bg-shopfront px-3 py-2 text-sm font-medium text-paper">
+          <button onClick={() => exportReport("pdf")} className="inline-flex items-center gap-2 rounded-full bg-shopfront px-3 py-2.5 text-sm font-medium text-paper active:scale-95 transition-transform">
             <FileText className="h-4 w-4" /> PDF
           </button>
         </div>
@@ -201,7 +201,7 @@ export default function ReportsPage() {
             <button
               key={item.key}
               onClick={() => setActiveReport(item.key)}
-              className={`inline-flex items-center gap-2 rounded-full px-3 py-2 text-sm font-medium transition ${activeReport === item.key ? "bg-shopfront text-paper" : "bg-white text-ink/70 ring-1 ring-black/5"}`}
+              className={`inline-flex items-center gap-2 rounded-full px-3 py-2 text-sm font-medium transition active:scale-95 ${activeReport === item.key ? "bg-shopfront text-paper" : "bg-white text-ink/70 ring-1 ring-black/5"}`}
             >
               <Icon className="h-4 w-4" /> {item.label}
             </button>

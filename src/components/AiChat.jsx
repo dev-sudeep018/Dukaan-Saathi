@@ -117,7 +117,7 @@ export default function AiChat({ onUpdateDashboard }) {
     return (
       <button 
         onClick={() => setIsOpen(true)}
-        className="fixed bottom-6 right-6 z-50 grid h-14 w-14 place-items-center rounded-full bg-shopfront text-marigold shadow-2xl transition-transform hover:scale-105"
+        className="fixed bottom-20 right-4 sm:bottom-6 sm:right-6 z-50 grid h-14 w-14 place-items-center rounded-full bg-shopfront text-marigold shadow-2xl transition-transform hover:scale-105 active:scale-95"
       >
         <span className="font-display text-2xl font-bold">दु</span>
       </button>
@@ -128,7 +128,7 @@ export default function AiChat({ onUpdateDashboard }) {
     <motion.div 
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="fixed bottom-6 right-6 z-50 flex h-[600px] max-h-[85vh] w-[380px] max-w-[calc(100vw-48px)] flex-col overflow-hidden rounded-[2rem] bg-paper shadow-[0_20px_40px_rgb(0,0,0,0.12)] ring-1 ring-black/5"
+      className="fixed bottom-0 sm:bottom-6 right-0 sm:right-6 z-50 flex h-[85dvh] sm:h-[600px] sm:max-h-[85vh] w-screen sm:w-[380px] sm:max-w-[calc(100vw-48px)] flex-col overflow-hidden rounded-none sm:rounded-[2rem] bg-paper shadow-[0_20px_40px_rgb(0,0,0,0.12)] ring-1 ring-black/5"
     >
       {/* Header */}
       <div className="flex items-center justify-between bg-white px-5 py-4 shadow-sm z-10">

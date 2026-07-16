@@ -735,13 +735,13 @@ export default function InventoryPage() {
             <ChevronDown className="pointer-events-none absolute right-2 top-1/2 h-3 w-3 -translate-y-1/2 text-ink/40" />
           </div>
 
-          {/* Stock status filter */}
-          <div className="flex items-center gap-1 rounded-full border border-black/10 bg-paper p-0.5">
+          {/* Stock status filter - scrollable on mobile */}
+          <div className="flex items-center gap-1 overflow-x-auto hide-scrollbar rounded-full border border-black/10 bg-paper p-0.5 max-w-[200px] sm:max-w-none">
             {STOCK_FILTERS.map((f) => (
               <button
                 key={f.value}
                 onClick={() => setStockFilter(f.value)}
-                className={`rounded-full px-3 py-1 text-xs font-semibold transition-all
+                className={`rounded-full px-3 py-1 text-xs font-semibold whitespace-nowrap transition-all shrink-0
                   ${stockFilter === f.value
                     ? f.value === "low"  ? "bg-terracotta text-white shadow-sm"
                     : f.value === "out"  ? "bg-ink text-white shadow-sm"
@@ -755,7 +755,7 @@ export default function InventoryPage() {
           </div>
 
           {/* Sort by */}
-          <div className="relative ml-auto">
+          <div className="relative ml-auto sm:ml-0">
             <select
               value={sortField}
               onChange={(e) => { setSortField(e.target.value); setSortDir("asc"); }}
@@ -768,21 +768,21 @@ export default function InventoryPage() {
           <button
             onClick={() => setSortDir((d) => d === "asc" ? "desc" : "asc")}
             title={sortDir === "asc" ? "Ascending" : "Descending"}
-            className="grid h-7 w-7 place-items-center rounded-full border border-black/10 bg-paper text-ink/50 hover:border-black/20 hover:text-ink transition"
+            className="grid h-8 w-8 place-items-center rounded-full border border-black/10 bg-paper text-ink/50 hover:border-black/20 hover:text-ink transition shrink-0"
           >
             {sortDir === "asc" ? <ChevronUp className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />}
           </button>
 
           {/* Result count + Clear */}
-          <span className="text-xs text-ink/40">
-            {filtered.length} / {data?.inventory?.length ?? 0} products
+          <span className="text-xs text-ink/40 whitespace-nowrap">
+            {filtered.length} / {data?.inventory?.length ?? 0}
           </span>
           {hasFilters && (
             <button
               onClick={clearFilters}
-              className="inline-flex items-center gap-1 text-xs font-semibold text-terracotta hover:underline"
+              className="inline-flex items-center gap-1 text-xs font-semibold text-terracotta hover:underline whitespace-nowrap"
             >
-              <X className="h-3 w-3" /> Clear filters
+              <X className="h-3 w-3" /> Clear
             </button>
           )}
         </div>

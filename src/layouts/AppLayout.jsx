@@ -167,25 +167,22 @@ export default function AppLayout() {
         </div>
 
         {/* Mobile Bottom Navigation */}
-        <nav className="fixed bottom-0 left-0 right-0 z-50 flex items-center justify-around border-t border-black/5 bg-white/90 pb-safe pt-2 backdrop-blur-xl lg:hidden">
-           {navItems.slice(0, 4).map((item) => {
+        <nav className="fixed bottom-0 left-0 right-0 z-50 flex items-center justify-around border-t border-black/5 bg-white/90 pb-safe pt-2 backdrop-blur-xl lg:hidden px-1">
+           {navItems.slice(0, 5).map((item) => {
              const isActive = location.pathname === item.path;
              const Icon = item.icon;
+             const shortName = item.name === "Shop Directory" ? "Directory" : item.name === "Dukaan Saathi AI" ? "AI" : item.name.split(" ")[0];
              return (
                <Link
                  key={item.path}
                  to={item.path}
-                 className={`flex flex-col items-center gap-1 p-2 ${isActive ? "text-shopfront" : "text-ink/40"}`}
+                 className={`flex flex-col items-center gap-0.5 px-1 py-1.5 rounded-xl min-w-0 flex-1 ${isActive ? "text-shopfront bg-shopfront/5" : "text-ink/40"}`}
                >
                  <Icon className={`h-5 w-5 ${isActive ? "text-marigold" : ""}`} />
-                 <span className="text-[10px] font-medium">{item.name.split(" ")[0]}</span>
+                 <span className="text-[10px] font-medium truncate w-full text-center leading-tight">{shortName}</span>
                </Link>
              );
            })}
-           <Link to="/app/settings" className={`flex flex-col items-center gap-1 p-2 ${location.pathname.includes('/app/settings') ? "text-shopfront" : "text-ink/40"}`}>
-             <Settings className="h-5 w-5" />
-             <span className="text-[10px] font-medium">More</span>
-           </Link>
         </nav>
       </main>
       <AiChat />

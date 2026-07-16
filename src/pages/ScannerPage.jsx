@@ -377,26 +377,26 @@ export default function ScannerPage() {
                 </div>
               )}
 
-              <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mt-6 pt-4 border-t border-black/5">
+              <div className="flex flex-col-reverse sm:flex-row items-center justify-between gap-4 mt-6 pt-4 border-t border-black/5">
                 <button
                   type="button"
                   onClick={addRow}
-                  className="flex items-center gap-1 text-xs font-bold text-ink/60 hover:text-shopfront hover:bg-paper-deep px-4 py-2 rounded-xl transition-all"
+                  className="flex items-center gap-1 text-xs font-bold text-ink/60 hover:text-shopfront hover:bg-paper-deep px-4 py-2.5 rounded-xl transition-all active:scale-95"
                 >
-                  <Plus className="h-4 w-4" /> Add Custom Row
+                  <Plus className="h-4 w-4" /> Add Row
                 </button>
                 <div className="flex items-center gap-3 w-full sm:w-auto">
                   <button
                     onClick={resetAll}
-                    className="flex-1 sm:flex-none text-xs font-semibold px-4 py-2 border border-black/5 rounded-xl hover:bg-paper-deep text-ink/70 text-center"
+                    className="flex-1 sm:flex-none text-xs font-semibold px-5 py-2.5 border border-black/5 rounded-xl hover:bg-paper-deep text-ink/70 text-center active:scale-95 transition-transform"
                   >
                     Cancel
                   </button>
                   <button
                     onClick={saveToLedger}
-                    className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 text-xs font-bold bg-leaf text-white px-5 py-2.5 rounded-xl hover:bg-leaf/90 shadow-sm transition-all"
+                    className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 text-xs font-bold bg-leaf text-white px-5 py-2.5 rounded-xl hover:bg-leaf/90 shadow-sm transition-all active:scale-95"
                   >
-                    <CheckCircle className="h-4 w-4" /> Confirm & Save Ledger
+                    <CheckCircle className="h-4 w-4" /> Confirm & Save
                   </button>
                 </div>
               </div>

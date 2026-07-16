@@ -54,19 +54,19 @@ export default function SalesPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <h1 className="font-display text-2xl font-bold text-shopfront">Sales</h1>
         <div className="flex gap-2">
           <button
             onClick={exportCsv}
             disabled={busy === "export"}
-            className="inline-flex items-center gap-1.5 rounded-full bg-white px-4 py-2 text-xs font-semibold text-ink/70 ring-1 ring-black/5 hover:bg-paper-deep disabled:opacity-50"
+            className="inline-flex items-center gap-1.5 rounded-full bg-white px-4 py-2.5 text-xs font-semibold text-ink/70 ring-1 ring-black/5 hover:bg-paper-deep disabled:opacity-50 active:scale-95"
           >
             <Download className="h-4 w-4" /> {t("dashboard.exportCsv")}
           </button>
           <button
             onClick={() => setShowAddSale(true)}
-            className="inline-flex items-center gap-1.5 rounded-full bg-shopfront px-4 py-2 text-xs font-semibold text-paper hover:-translate-y-0.5 transition-transform"
+            className="inline-flex items-center gap-1.5 rounded-full bg-shopfront px-4 py-2.5 text-xs font-semibold text-paper hover:-translate-y-0.5 transition-transform active:scale-95"
           >
             <Plus className="h-4 w-4" /> {t("dashboard.addSale")}
           </button>

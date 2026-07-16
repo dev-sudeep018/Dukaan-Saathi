@@ -90,8 +90,15 @@ body {
   filter: blur(6px);
 }
 
+/* improve touch target and tap highlight globally */
 .tap-highlight-none {
   -webkit-tap-highlight-color: transparent;
+}
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+button, a, input, select, textarea {
+  font-size: 16px; /* prevent iOS zoom on focus */
 }
 
 /* thin, warm scrollbar inside chat surfaces */
@@ -101,6 +108,20 @@ body {
 .chat-scroll::-webkit-scrollbar-thumb {
   background: rgba(27, 58, 75, 0.2);
   border-radius: 999px;
+}
+
+/* hide scrollbar for filter strips */
+.hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* safe area padding for notched phones */
+.pb-safe {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
 }
 
 /* ---- Waveform bars (voice note) ------------------------------------------ */

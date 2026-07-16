@@ -108,14 +108,14 @@ export default function DashboardPage() {
         <div className="mb-5 flex flex-wrap items-center gap-2">
           <button
             onClick={() => setShowAddSale(true)}
-            className="inline-flex items-center gap-1.5 rounded-full bg-shopfront px-4 py-2 text-xs font-semibold text-paper hover:-translate-y-0.5 transition-transform"
+            className="inline-flex items-center gap-1.5 rounded-full bg-shopfront px-4 py-2.5 text-xs font-semibold text-paper hover:-translate-y-0.5 transition-transform active:scale-95"
           >
             <Plus className="h-4 w-4" /> {t("dashboard.addSale")}
           </button>
           <button
             onClick={loadDemo}
             disabled={busy === "demo"}
-            className="inline-flex items-center gap-1.5 rounded-full bg-marigold/20 px-4 py-2 text-xs font-semibold text-shopfront hover:bg-marigold/30 disabled:opacity-50"
+            className="inline-flex items-center gap-1.5 rounded-full bg-marigold/20 px-4 py-2.5 text-xs font-semibold text-shopfront hover:bg-marigold/30 disabled:opacity-50 active:scale-95"
           >
             <Sparkles className="h-4 w-4 text-marigold" />
             {busy === "demo" ? t("dashboard.loading") || "Loading…" : t("dashboard.loadDemo")}
@@ -123,7 +123,7 @@ export default function DashboardPage() {
           <button
             onClick={exportCsv}
             disabled={busy === "export"}
-            className="inline-flex items-center gap-1.5 rounded-full bg-white px-4 py-2 text-xs font-semibold text-ink/70 ring-1 ring-black/5 hover:bg-paper-deep disabled:opacity-50"
+            className="inline-flex items-center gap-1.5 rounded-full bg-white px-4 py-2.5 text-xs font-semibold text-ink/70 ring-1 ring-black/5 hover:bg-paper-deep disabled:opacity-50 active:scale-95"
           >
             <Download className="h-4 w-4" /> {t("dashboard.exportCsv")}
           </button>
@@ -236,11 +236,11 @@ export default function DashboardPage() {
 
         {data?.bestSeller && (
           <div className="mt-4 flex flex-wrap items-center gap-2 rounded-2xl bg-marigold/10 px-4 py-3 text-sm text-shopfront ring-1 ring-marigold/20">
-            <Star className="h-4 w-4 text-marigold" />
+            <Star className="h-4 w-4 shrink-0 text-marigold" />
             <span className="font-semibold capitalize">{data.bestSeller.topSeller.item}</span>
             <span className="text-ink/60">{t("dashboard.bestSeller")}</span>
             {data.bestSeller.topProfit && (
-              <span className="ml-auto text-ink/60">
+              <span className="lg:ml-auto w-full lg:w-auto text-xs lg:text-sm text-ink/60">
                 {t("dashboard.mostProfit")}: <span className="font-semibold capitalize text-shopfront">{data.bestSeller.topProfit.item}</span> ({money(data.bestSeller.topProfit.profit)})
               </span>
             )}
@@ -403,11 +403,11 @@ export function AddSaleModal({ onClose, onSubmit, t, defaultPaymentType = "cash"
   };
 
   return (
-    <div className="fixed inset-0 z-50 grid place-items-center bg-black/40 p-4" onClick={onClose}>
-      <div className="w-full max-w-sm rounded-2xl bg-white p-6 shadow-xl" onClick={(e) => e.stopPropagation()}>
+    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/40 p-0 sm:p-4" onClick={onClose}>
+      <div className="w-full sm:max-w-sm rounded-t-3xl sm:rounded-2xl bg-white p-6 shadow-xl max-h-[90dvh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
         <div className="mb-4 flex items-center justify-between">
           <h3 className="font-display text-lg font-semibold text-shopfront">{t("dashboard.addSale")}</h3>
-          <button onClick={onClose} className="text-ink/40 hover:text-ink"><X className="h-5 w-5" /></button>
+          <button onClick={onClose} className="text-ink/40 hover:text-ink rounded-full p-1.5 hover:bg-paper transition-colors"><X className="h-5 w-5" /></button>
         </div>
         <form onSubmit={submit} className="space-y-3">
           <input className="ds-input" placeholder={t("dashboard.item")} value={form.item} onChange={set("item")} autoFocus />
@@ -421,7 +421,7 @@ export function AddSaleModal({ onClose, onSubmit, t, defaultPaymentType = "cash"
                 type="button"
                 key={pt}
                 onClick={() => setForm((f) => ({ ...f, payment_type: pt }))}
-                className={`flex-1 rounded-lg px-3 py-2 text-sm font-medium ${form.payment_type === pt ? (pt === "udhaar" ? "bg-terracotta/15 text-terracotta ring-1 ring-terracotta/30" : "bg-leaf/15 text-leaf ring-1 ring-leaf/30") : "bg-paper text-ink/50"}`}
+                className={`flex-1 rounded-lg px-3 py-2.5 text-sm font-medium ${form.payment_type === pt ? (pt === "udhaar" ? "bg-terracotta/15 text-terracotta ring-1 ring-terracotta/30" : "bg-leaf/15 text-leaf ring-1 ring-leaf/30") : "bg-paper text-ink/50"}`}
               >
                 {pt === "udhaar" ? t("dashboard.udhaar") : t("dashboard.cash")}
               </button>
@@ -435,11 +435,11 @@ export function AddSaleModal({ onClose, onSubmit, t, defaultPaymentType = "cash"
             />
           )}
           {error && <p className="rounded-lg bg-terracotta/10 px-3 py-2 text-sm text-terracotta">{error}</p>}
-          <button type="submit" disabled={busy} className="w-full rounded-full bg-marigold px-6 py-2.5 text-sm font-semibold text-shopfront disabled:opacity-50">
+          <button type="submit" disabled={busy} className="w-full rounded-full bg-marigold px-6 py-3 text-sm font-semibold text-shopfront disabled:opacity-50 active:scale-[0.98] transition-transform">
             {busy ? t("dashboard.saving") || "Saving…" : t("dashboard.addSale")}
           </button>
         </form>
-        <style>{`.ds-input{width:100%;border-radius:0.6rem;border:1px solid rgba(27,58,75,0.15);padding:0.55rem 0.75rem;font-size:0.9rem;outline:none}.ds-input:focus{border-color:var(--color-marigold);box-shadow:0 0 0 3px rgba(245,166,35,0.2)}`}</style>
+        <style>{`.ds-input{width:100%;border-radius:0.6rem;border:1px solid rgba(27,58,75,0.15);padding:0.65rem 0.75rem;font-size:0.9rem;outline:none}.ds-input:focus{border-color:var(--color-marigold);box-shadow:0 0 0 3px rgba(245,166,35,0.2)}`}</style>
       </div>
     </div>
   );

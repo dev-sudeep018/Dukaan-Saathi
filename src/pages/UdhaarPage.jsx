@@ -20,20 +20,20 @@ export default function UdhaarPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between no-print">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 no-print">
         <h1 className="font-display text-2xl font-bold text-shopfront">Udhaar Khata</h1>
         <div className="flex gap-2">
           <button
             onClick={() => setShowReminders(true)}
-            className="inline-flex items-center gap-1.5 rounded-full bg-paper px-4 py-2 text-xs font-semibold text-ink/75 ring-1 ring-black/5 hover:bg-paper-deep transition-all"
+            className="inline-flex items-center gap-1.5 rounded-full bg-paper px-4 py-2.5 text-xs font-semibold text-ink/75 ring-1 ring-black/5 hover:bg-paper-deep transition-all active:scale-95"
           >
-            <Send className="h-3.5 w-3.5 text-marigold" /> Send Reminders
+            <Send className="h-3.5 w-3.5 text-marigold" /> Reminders
           </button>
           <button
             onClick={() => setShowAddSale(true)}
-            className="inline-flex items-center gap-1.5 rounded-full bg-shopfront px-4 py-2 text-xs font-semibold text-paper hover:-translate-y-0.5 transition-transform"
+            className="inline-flex items-center gap-1.5 rounded-full bg-shopfront px-4 py-2.5 text-xs font-semibold text-paper hover:-translate-y-0.5 transition-transform active:scale-95"
           >
-            <Plus className="h-4 w-4" /> Create Udhaar Bill
+            <Plus className="h-4 w-4" /> Create Bill
           </button>
         </div>
       </div>
@@ -44,28 +44,30 @@ export default function UdhaarPage() {
             {data?.dues?.customers?.length ? (
               <ul className="space-y-2">
                 {data.dues.customers.map((c) => (
-                  <li key={c.id} className="flex items-center justify-between gap-4 rounded-xl bg-paper px-4 py-3 hover:bg-black/5 transition-colors">
-                    <div className="flex flex-col">
+                  <li key={c.id} className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 rounded-xl bg-paper px-4 py-3 hover:bg-black/5 transition-colors">
+                    <div className="flex items-center justify-between sm:flex-col sm:items-start gap-2">
                       <span className="font-semibold text-shopfront capitalize text-base">{c.name}</span>
-                      <span className="text-xs text-ink/60 mt-0.5">Customer since {new Date().getFullYear()}</span>
+                      <span className="text-xs text-ink/50 whitespace-nowrap">Since {new Date().getFullYear()}</span>
                     </div>
-                    <div className="flex items-center gap-4">
-                      <div className="flex flex-col items-end">
-                        <span className="text-sm text-ink/50 uppercase tracking-wide">Due</span>
+                    <div className="flex items-center gap-3 flex-wrap">
+                      <div className="flex items-center gap-1">
+                        <span className="text-xs text-ink/50 uppercase tracking-wide">Due:</span>
                         <span className="text-lg font-bold text-terracotta">{money(c.outstanding)}</span>
                       </div>
-                      <button 
-                        onClick={() => setReminderModalCustomer(c)}
-                        className="rounded-full bg-paper px-4 py-2 text-sm font-semibold text-shopfront ring-1 ring-black/10 hover:bg-black/5 hover:shadow-sm transition-all"
-                      >
-                        Send Reminder
-                      </button>
-                      <button 
-                        onClick={() => setActiveUpiCustomer(c)} 
-                        className="rounded-full bg-leaf px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-leaf/90 hover:shadow transition-all"
-                      >
-                        Pay via UPI
-                      </button>
+                      <div className="flex gap-2 w-full sm:w-auto">
+                        <button 
+                          onClick={() => setReminderModalCustomer(c)}
+                          className="flex-1 sm:flex-none rounded-full bg-paper px-3 py-2 text-xs font-semibold text-shopfront ring-1 ring-black/10 hover:bg-black/5 hover:shadow-sm transition-all active:scale-95"
+                        >
+                          Remind
+                        </button>
+                        <button 
+                          onClick={() => setActiveUpiCustomer(c)} 
+                          className="flex-1 sm:flex-none rounded-full bg-leaf px-3 py-2 text-xs font-semibold text-white shadow-sm hover:bg-leaf/90 hover:shadow transition-all active:scale-95"
+                        >
+                          UPI Pay
+                        </button>
+                      </div>
                     </div>
                   </li>
                 ))}
@@ -541,8 +543,8 @@ Thank you.`;
   };
 
   return (
-    <div className="fixed inset-0 z-50 grid place-items-center bg-black/40 p-4">
-      <div className="w-full max-w-4xl rounded-2xl bg-white p-6 shadow-xl relative flex flex-col max-h-[90vh]" onClick={(e) => e.stopPropagation()}>
+    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/40 p-0 sm:p-4">
+      <div className="w-full sm:max-w-4xl rounded-t-3xl sm:rounded-2xl bg-white p-4 sm:p-6 shadow-xl relative flex flex-col max-h-[95dvh] sm:max-h-[90vh]" onClick={(e) => e.stopPropagation()}>
         
         {/* Header */}
         <div className="mb-4 flex items-center justify-between border-b border-black/5 pb-3">
@@ -612,68 +614,72 @@ Thank you.`;
           <div className="flex-1 overflow-hidden flex flex-col min-h-0">
             <div className="flex-1 overflow-y-auto rounded-xl border border-black/5 mb-4 custom-scrollbar">
               {pendingCustomers.length > 0 ? (
-                <table className="w-full text-left text-sm border-collapse">
-                  <thead>
-                    <tr className="border-b border-black/5 bg-paper text-xs text-ink/50 uppercase font-semibold">
-                      <th className="py-2.5 px-4 text-center w-12">
-                        <input
-                          type="checkbox"
-                          checked={selectedIds.size === pendingCustomers.length && pendingCustomers.length > 0}
-                          onChange={(e) => handleSelectAll(e.target.checked)}
-                          className="rounded text-marigold focus:ring-marigold"
-                        />
-                      </th>
-                      <th className="py-2.5 px-2">Customer</th>
-                      <th className="py-2.5 px-2">Phone</th>
-                      <th className="py-2.5 px-2 text-right">Outstanding</th>
-                      <th className="py-2.5 px-4 text-center w-40">Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {pendingCustomers.map((c) => {
-                      const isSelected = selectedIds.has(c.id);
-                      return (
-                        <tr key={c.id} className="border-b border-black/5 hover:bg-black/[0.01] transition-colors">
-                          <td className="py-3 px-4 text-center">
-                            <input
-                              type="checkbox"
-                              checked={isSelected}
-                              onChange={() => handleToggleSelect(c.id)}
-                              className="rounded text-marigold focus:ring-marigold"
-                            />
-                          </td>
-                          <td className="py-3 px-2 font-semibold capitalize text-shopfront">{c.name}</td>
-                          <td className="py-3 px-2 text-xs font-mono text-ink/60">{c.phone || "No phone"}</td>
-                          <td className="py-3 px-2 text-right font-bold text-terracotta">{money(c.outstanding)}</td>
-                          <td className="py-3 px-4 text-center flex items-center justify-center gap-2">
-                            <button
-                              onClick={() => setPreviewId(previewId === c.id ? null : c.id)}
-                              className="px-2 py-1 text-[10px] font-bold bg-paper rounded text-ink/60 hover:bg-paper-deep hover:text-ink transition-colors"
-                            >
-                              {previewId === c.id ? "Close Prev" : "Preview"}
-                            </button>
-                            <button
-                              onClick={() => handleSendSingle(c, "whatsapp")}
-                              disabled={!c.phone}
-                              className="p-1.5 rounded-full bg-leaf/10 text-leaf hover:bg-leaf hover:text-white transition-colors"
-                              title="Send via WhatsApp"
-                            >
-                              <MessageSquare className="h-3.5 w-3.5" />
-                            </button>
-                            <button
-                              onClick={() => handleSendSingle(c, "sms")}
-                              disabled={!c.phone}
-                              className="p-1.5 rounded-full bg-shopfront/10 text-shopfront hover:bg-shopfront hover:text-white transition-colors"
-                              title="Send via SMS"
-                            >
-                              <PhoneCall className="h-3.5 w-3.5" />
-                            </button>
-                          </td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
+                <div className="overflow-x-auto">
+                  <table className="w-full min-w-[500px] text-left text-sm border-collapse">
+                    <thead>
+                      <tr className="border-b border-black/5 bg-paper text-xs text-ink/50 uppercase font-semibold">
+                        <th className="py-2.5 px-3 text-center w-10">
+                          <input
+                            type="checkbox"
+                            checked={selectedIds.size === pendingCustomers.length && pendingCustomers.length > 0}
+                            onChange={(e) => handleSelectAll(e.target.checked)}
+                            className="rounded text-marigold focus:ring-marigold"
+                          />
+                        </th>
+                        <th className="py-2.5 px-2">Customer</th>
+                        <th className="py-2.5 px-2 hidden sm:table-cell">Phone</th>
+                        <th className="py-2.5 px-2 text-right">Outstanding</th>
+                        <th className="py-2.5 px-3 text-center w-36">Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {pendingCustomers.map((c) => {
+                        const isSelected = selectedIds.has(c.id);
+                        return (
+                          <tr key={c.id} className="border-b border-black/5 hover:bg-black/[0.01] transition-colors">
+                            <td className="py-3 px-3 text-center">
+                              <input
+                                type="checkbox"
+                                checked={isSelected}
+                                onChange={() => handleToggleSelect(c.id)}
+                                className="rounded text-marigold focus:ring-marigold"
+                              />
+                            </td>
+                            <td className="py-3 px-2 font-semibold capitalize text-shopfront">{c.name}</td>
+                            <td className="py-3 px-2 text-xs font-mono text-ink/60 hidden sm:table-cell">{c.phone || "—"}</td>
+                            <td className="py-3 px-2 text-right font-bold text-terracotta whitespace-nowrap">{money(c.outstanding)}</td>
+                            <td className="py-3 px-3 text-center">
+                              <div className="flex items-center justify-center gap-1.5">
+                                <button
+                                  onClick={() => setPreviewId(previewId === c.id ? null : c.id)}
+                                  className="px-2 py-1 text-[10px] font-bold bg-paper rounded text-ink/60 hover:bg-paper-deep hover:text-ink transition-colors"
+                                >
+                                  {previewId === c.id ? "Close" : "Prev"}
+                                </button>
+                                <button
+                                  onClick={() => handleSendSingle(c, "whatsapp")}
+                                  disabled={!c.phone}
+                                  className="p-1.5 rounded-full bg-leaf/10 text-leaf hover:bg-leaf hover:text-white transition-colors shrink-0"
+                                  title="Send via WhatsApp"
+                                >
+                                  <MessageSquare className="h-3.5 w-3.5" />
+                                </button>
+                                <button
+                                  onClick={() => handleSendSingle(c, "sms")}
+                                  disabled={!c.phone}
+                                  className="p-1.5 rounded-full bg-shopfront/10 text-shopfront hover:bg-shopfront hover:text-white transition-colors shrink-0"
+                                  title="Send via SMS"
+                                >
+                                  <PhoneCall className="h-3.5 w-3.5" />
+                                </button>
+                              </div>
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
               ) : (
                 <div className="py-12 text-center text-ink/40">No pending debtors found for month-end payments.</div>
               )}
