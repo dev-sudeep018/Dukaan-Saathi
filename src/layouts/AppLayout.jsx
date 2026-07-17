@@ -8,7 +8,6 @@ import {
 } from "lucide-react";
 import { useAuth } from "../lib/auth-context";
 import LanguageSwitcher from "../components/LanguageSwitcher";
-import ThemeToggle from "../components/ThemeToggle";
 import AiChat from "../components/AiChat";
 import ShopSelector from "../components/ShopSelector";
 import { motion, AnimatePresence } from "motion/react";
@@ -91,7 +90,6 @@ export default function AppLayout() {
         
         <div className="px-4 py-4 border-b border-black/5 dark:border-white/5 flex items-center justify-between">
           <LanguageSwitcher />
-          <ThemeToggle />
         </div>
         
         <nav className="flex-1 space-y-1 px-4 py-4 overflow-y-auto custom-scrollbar">
@@ -155,7 +153,6 @@ export default function AppLayout() {
             <div className="flex items-center gap-2">
               <ShopSelector />
               <LanguageSwitcher />
-              <ThemeToggle />
             </div>
         </header>
 
