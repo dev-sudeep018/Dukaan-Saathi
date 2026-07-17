@@ -13,8 +13,9 @@ export default function Footer() {
           </div>
         </div>
 
-        <div className="inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 ring-1 ring-black/5">
-          <span className="font-sans text-xs font-medium text-ink/70">Trusted by modern retail teams</span>
+        <div className="inline-flex items-center gap-2 rounded-full bg-white dark:bg-shopfront px-4 py-2 ring-1 ring-black/5 dark:ring-white/5">
+          <Trophy className="h-4 w-4 text-marigold" />
+          <span className="font-sans text-xs font-medium text-ink/70">{t("footer.submission")}</span>
         </div>
       </div>
       <div className="border-t border-shopfront/10 py-4 text-center">

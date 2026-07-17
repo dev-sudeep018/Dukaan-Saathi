@@ -31,7 +31,7 @@ export default function MagicLoop() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, amount: 0.5 }}
                 transition={{ duration: 0.5, delay: i * 0.18 }}
-                className="flex h-full flex-col rounded-2xl bg-white p-5 shadow-[var(--shadow-card)] ring-1 ring-black/5"
+                className="flex h-full flex-col rounded-2xl bg-white dark:bg-shopfront p-5 shadow-[var(--shadow-card)] ring-1 ring-black/5 dark:ring-white/5"
               >
                 <div className="mb-3 inline-grid h-11 w-11 place-items-center rounded-xl bg-marigold/15 text-terracotta">
                   <Icon className="h-5 w-5" />

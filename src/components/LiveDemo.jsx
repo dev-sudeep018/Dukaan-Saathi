@@ -141,7 +141,7 @@ export default function LiveDemo() {
             </div>
             <button
               onClick={reset}
-              className="flex items-center gap-1.5 rounded-full bg-white/10 px-3 py-1.5 text-[11px] font-medium text-paper/80 transition-colors hover:bg-white/20 tap-highlight-none"
+              className="flex items-center gap-1.5 rounded-full bg-white dark:bg-shopfront/10 px-3 py-1.5 text-[11px] font-medium text-paper/80 transition-colors hover:bg-white dark:bg-shopfront/20 tap-highlight-none"
             >
               <RotateCcw className="h-3.5 w-3.5" /> {t("demo.reset")}
             </button>
@@ -165,7 +165,7 @@ export default function LiveDemo() {
                     className={`max-w-[85%] rounded-2xl px-3.5 py-2.5 text-[13px] leading-snug ${
                       m.side === "out"
                         ? "rounded-br-md bg-[#005c4b] text-paper"
-                        : "rounded-bl-md bg-white text-ink"
+                        : "rounded-bl-md bg-white dark:bg-shopfront text-ink"
                     }`}
                   >
                     {m.node}
@@ -193,7 +193,7 @@ export default function LiveDemo() {
                   disabled={typing}
                   className={`rounded-full px-3.5 py-2 font-sans text-[12px] font-medium transition-all tap-highlight-none disabled:opacity-40 ${
                     used.includes(p.id)
-                      ? "bg-white/10 text-paper/50"
+                      ? "bg-white dark:bg-shopfront/10 text-paper/50"
                       : "bg-marigold text-shopfront hover:-translate-y-0.5"
                   }`}
                 >
@@ -201,7 +201,7 @@ export default function LiveDemo() {
                 </button>
               ))}
             </div>
-            <div className="mt-3 flex items-center gap-2 rounded-full bg-white/5 px-4 py-2.5">
+            <div className="mt-3 flex items-center gap-2 rounded-full bg-white dark:bg-shopfront/5 px-4 py-2.5">
               <span className="flex-1 text-[12px] text-paper/30">{t("demo.inputPlaceholder")}</span>
               <span className="grid h-7 w-7 place-items-center rounded-full bg-marigold text-shopfront">
                 <Send className="h-3.5 w-3.5" />

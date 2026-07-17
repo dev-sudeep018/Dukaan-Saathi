@@ -44,11 +44,11 @@ export default function Comparison() {
       </Reveal>
 
       <Reveal delay={0.1}>
-        <div className="mt-10 overflow-hidden rounded-2xl bg-white shadow-[var(--shadow-card)] ring-1 ring-black/5">
+        <div className="mt-10 overflow-hidden rounded-2xl bg-white dark:bg-shopfront shadow-[var(--shadow-card)] ring-1 ring-black/5 dark:ring-white/5">
           <div className="overflow-x-auto">
             <table className="w-full min-w-[520px] border-collapse text-left text-sm">
               <thead>
-                <tr className="border-b border-black/10">
+                <tr className="border-b border-black/10 dark:border-white/10">
                   <th className="px-5 py-4">&nbsp;</th>
                   <th className="bg-marigold/10 px-5 py-4 font-sans text-sm font-bold text-shopfront">
                     {t("compare.mine")}
@@ -66,7 +66,7 @@ export default function Comparison() {
                   const mine = isText ? arr[1] : row.mine;
                   const theirs = isText ? arr[2] : row.theirs;
                   return (
-                    <tr key={row.key} className={i % 2 ? "bg-paper/40" : "bg-white"}>
+                    <tr key={row.key} className={i % 2 ? "bg-paper/40" : "bg-white dark:bg-shopfront"}>
                       <td className="px-5 py-3.5 font-body font-medium text-ink/80">{label}</td>
                       <td className="bg-marigold/5 px-5 py-3.5"><Cell v={mine} positive /></td>
                       <td className="px-5 py-3.5"><Cell v={theirs} /></td>
@@ -82,7 +82,7 @@ export default function Comparison() {
       <Reveal delay={0.15}>
         <div className="mt-8 grid gap-4 sm:grid-cols-2">
           {[["why1Q", "why1A"], ["why2Q", "why2A"]].map(([q, a]) => (
-            <div key={q} className="rounded-2xl border border-shopfront/15 bg-white/70 p-6">
+            <div key={q} className="rounded-2xl border border-shopfront/15 bg-white dark:bg-shopfront/70 p-6">
               <div className="mb-2 inline-flex items-center gap-2 text-terracotta">
                 <HelpCircle className="h-5 w-5" />
                 <span className="font-sans text-sm font-semibold">{t(`compare.${q}`)}</span>

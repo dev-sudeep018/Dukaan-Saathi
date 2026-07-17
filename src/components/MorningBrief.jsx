@@ -31,7 +31,7 @@ export default function MorningBrief({ data, t, money }) {
             </p>
           </div>
           
-          <div className="inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1.5 backdrop-blur-sm border border-white/10">
+          <div className="inline-flex items-center gap-2 rounded-full bg-white dark:bg-shopfront/10 px-3 py-1.5 backdrop-blur-sm border border-white/10">
             <Target className="h-4 w-4 text-marigold" />
             <span className="text-sm font-medium text-white/90">
               AI Suggestion: <span className="text-white font-bold">{nextGoal}</span>
@@ -56,8 +56,8 @@ export default function MorningBrief({ data, t, money }) {
             </div>
           </div>
           
-          <div className="hidden md:block h-px w-full bg-white/10" />
-          <div className="block md:hidden w-px h-full bg-white/10" />
+          <div className="hidden md:block h-px w-full bg-white dark:bg-shopfront/10" />
+          <div className="block md:hidden w-px h-full bg-white dark:bg-shopfront/10" />
 
           {/* Daily Goal */}
           <div className="flex flex-col justify-center">
@@ -65,7 +65,7 @@ export default function MorningBrief({ data, t, money }) {
                <span className="text-[10px] uppercase tracking-wider text-white/50 font-bold">Today's Goal</span>
                <span className="text-xs font-bold">{progress}%</span>
              </div>
-             <div className="h-2 w-32 bg-white/10 rounded-full overflow-hidden">
+             <div className="h-2 w-32 bg-white dark:bg-shopfront/10 rounded-full overflow-hidden">
                <motion.div 
                  initial={{ width: 0 }}
                  animate={{ width: `${progress}%` }}

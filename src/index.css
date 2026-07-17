@@ -16,9 +16,11 @@
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
   --font-body: "Inter", ui-sans-serif, system-ui, sans-serif;
 
-  --shadow-card: 0 18px 40px -20px rgba(27, 58, 75, 0.35);
-  --shadow-phone: 0 40px 80px -30px rgba(27, 58, 75, 0.55);
+  --shadow-card: 0 18px 40px -20px rgba(0, 0, 0, 0.7);
+  --shadow-phone: 0 40px 80px -30px rgba(0, 0, 0, 0.8);
 }
+
+@custom-variant dark (&:where(.dark, .dark *));
 
 :root {
   --marigold: #F59E0B;
@@ -30,6 +32,24 @@
   --terracotta: #EF4444;
   --leaf: #10B981;
   --ink: #020617;
+  --ledger-line: rgba(27, 58, 75, 0.08);
+  --ledger-margin: rgba(193, 80, 46, 0.28);
+}
+
+:root.dark {
+  --marigold: #F59E0B;
+  --marigold-soft: #925C05;
+  --shopfront: #1E293B;
+  --shopfront-700: #334155;
+  --paper: #0B1121;
+  --paper-deep: #020617;
+  --terracotta: #F87171;
+  --leaf: #34D399;
+  --ink: #F8FAFC;
+  --ledger-line: rgba(255, 255, 255, 0.05);
+  --ledger-margin: rgba(248, 113, 113, 0.28);
+  --shadow-card: 0 18px 40px -20px rgba(0, 0, 0, 0.7);
+  --shadow-phone: 0 40px 80px -30px rgba(0, 0, 0, 0.8);
 }
 
 /* ---- Base ---------------------------------------------------------------- */
@@ -54,8 +74,8 @@ body {
     to bottom,
     transparent 0,
     transparent calc(2rem - 1px),
-    rgba(27, 58, 75, 0.08) calc(2rem - 1px),
-    rgba(27, 58, 75, 0.08) 2rem
+    var(--ledger-line) calc(2rem - 1px),
+    var(--ledger-line) 2rem
   );
   background-size: 100% 2rem;
 }
@@ -68,7 +88,7 @@ body {
   bottom: 0;
   left: 2.25rem;
   width: 2px;
-  background: rgba(193, 80, 46, 0.28);
+  background: var(--ledger-margin);
 }
 
 /* torn-paper bottom edge for notebook cards */

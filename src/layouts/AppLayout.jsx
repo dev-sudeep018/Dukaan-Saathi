@@ -8,6 +8,7 @@ import {
 } from "lucide-react";
 import { useAuth } from "../lib/auth-context";
 import LanguageSwitcher from "../components/LanguageSwitcher";
+import ThemeToggle from "../components/ThemeToggle";
 import AiChat from "../components/AiChat";
 import { motion, AnimatePresence } from "motion/react";
 
@@ -78,16 +79,17 @@ export default function AppLayout() {
   return (
     <div className="flex min-h-screen bg-paper font-body text-ink">
       {/* Desktop Sidebar */}
-      <aside className="hidden w-64 flex-col border-r border-black/5 bg-white/50 backdrop-blur-xl lg:flex">
-        <div className="flex h-16 shrink-0 items-center justify-between px-6 border-b border-black/5">
-          <Link to="/app/dashboard" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
+      <aside className="hidden w-64 flex-col border-r border-black/5 dark:border-white/5 bg-white dark:bg-shopfront/50 backdrop-blur-xl lg:flex">
+        <div className="flex h-16 shrink-0 items-center justify-between px-6 border-b border-black/5 dark:border-white/5">
+          <div className="flex items-center gap-3">
             <div className="grid h-8 w-8 place-items-center rounded-xl bg-shopfront text-sm font-bold text-marigold">दु</div>
             <span className="font-display text-lg font-bold tracking-tight text-shopfront">Dukaan Saathi</span>
           </Link>
         </div>
         
-        <div className="px-4 py-4 border-b border-black/5">
+        <div className="px-4 py-4 border-b border-black/5 dark:border-white/5 flex items-center justify-between">
           <LanguageSwitcher />
+          <ThemeToggle />
         </div>
         
         <nav className="flex-1 space-y-1 px-4 py-4 overflow-y-auto custom-scrollbar">
@@ -110,7 +112,7 @@ export default function AppLayout() {
             );
           })}
           
-          <div className="my-4 border-t border-black/5" />
+          <div className="my-4 border-t border-black/5 dark:border-white/5" />
           
           {bottomItems.map((item) => {
             const isActive = location.pathname === item.path;
@@ -143,12 +145,15 @@ export default function AppLayout() {
 
       {/* Main Content Area */}
       <main className="flex w-full flex-1 flex-col overflow-hidden relative">
-        <header className="sticky top-0 z-40 flex h-16 shrink-0 items-center justify-between border-b border-black/5 bg-white/50 px-4 backdrop-blur-xl sm:px-6 lg:hidden">
-           <Link to="/app/dashboard" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
+        <header className="sticky top-0 z-40 flex h-16 shrink-0 items-center justify-between border-b border-black/5 dark:border-white/5 bg-white dark:bg-shopfront/50 px-4 backdrop-blur-xl sm:px-6 lg:hidden">
+           <div className="flex items-center gap-3">
              <div className="grid h-8 w-8 place-items-center rounded-xl bg-shopfront text-sm font-bold text-marigold">दु</div>
              <span className="font-display text-lg font-bold tracking-tight text-shopfront">Dukaan Saathi</span>
-           </Link>
-           <LanguageSwitcher />
+           </div>
+           <div className="flex items-center gap-2">
+             <ThemeToggle />
+             <LanguageSwitcher />
+           </div>
         </header>
 
         <div className="flex-1 overflow-y-auto bg-paper p-4 sm:p-6 custom-scrollbar pb-24 lg:pb-6">
@@ -167,8 +172,8 @@ export default function AppLayout() {
         </div>
 
         {/* Mobile Bottom Navigation */}
-        <nav className="fixed bottom-0 left-0 right-0 z-50 flex items-center justify-around border-t border-black/5 bg-white/90 pb-safe pt-2 backdrop-blur-xl lg:hidden px-1">
-           {navItems.slice(0, 5).map((item) => {
+        <nav className="fixed bottom-0 left-0 right-0 z-50 flex items-center justify-around border-t border-black/5 dark:border-white/5 bg-white dark:bg-shopfront/90 pb-safe pt-2 backdrop-blur-xl lg:hidden">
+           {navItems.slice(0, 4).map((item) => {
              const isActive = location.pathname === item.path;
              const Icon = item.icon;
              const shortName = item.name === "Shop Directory" ? "Directory" : item.name === "Dukaan Saathi AI" ? "AI" : item.name.split(" ")[0];

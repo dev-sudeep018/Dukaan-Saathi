@@ -33,6 +33,25 @@ export default function TeamCTA() {
           </div>
         </div>
       </Reveal>
+
+      <Reveal delay={0.1}>
+        <div className="mt-14">
+          <p className="text-center font-sans text-sm font-semibold uppercase tracking-wide text-ink/40">
+            {t("team.builtBy")}
+          </p>
+          <div className="mx-auto mt-6 grid max-w-3xl grid-cols-2 gap-4 sm:grid-cols-4">
+            {TEAM.map((m) => (
+              <div key={m.name} className="rounded-2xl bg-white dark:bg-shopfront p-5 text-center ring-1 ring-black/5 dark:ring-white/5">
+                <div className="mx-auto grid h-12 w-12 place-items-center rounded-full bg-marigold/15 font-display text-lg font-bold text-terracotta">
+                  {m.name.split(" ").map((w) => w[0]).join("").slice(0, 2)}
+                </div>
+                <p className="mt-3 font-sans text-sm font-semibold text-shopfront">{m.name}</p>
+                <p className="font-body text-xs text-ink/50">{m.role}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </Reveal>
     </Section>
   );
 }

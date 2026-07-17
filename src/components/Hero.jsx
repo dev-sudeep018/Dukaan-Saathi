@@ -15,9 +15,9 @@ function HeroDashboardMock() {
   }, [step]);
 
   return (
-    <div className="relative w-full max-w-[540px] rounded-[1.5rem] border border-black/5 bg-white shadow-[0_24px_60px_-15px_rgba(16,185,129,0.15)] overflow-hidden">
+    <div className="relative w-full max-w-[540px] rounded-[1.5rem] border border-black/5 dark:border-white/5 bg-white dark:bg-shopfront shadow-[0_24px_60px_-15px_rgba(16,185,129,0.15)] overflow-hidden">
       {/* Fake Browser Bar */}
-      <div className="flex h-10 items-center gap-2 border-b border-black/5 bg-paper px-4">
+      <div className="flex h-10 items-center gap-2 border-b border-black/5 dark:border-white/5 bg-paper px-4">
         <div className="flex gap-1.5">
           <div className="h-2.5 w-2.5 rounded-full bg-terracotta/80" />
           <div className="h-2.5 w-2.5 rounded-full bg-marigold/80" />
@@ -31,15 +31,15 @@ function HeroDashboardMock() {
         <div className="flex-1 space-y-4 pr-4">
           <div className="h-8 w-32 rounded-lg bg-black/5" />
           <div className="grid grid-cols-2 gap-3">
-            <div className="h-24 rounded-xl bg-white shadow-sm ring-1 ring-black/5" />
-            <div className="h-24 rounded-xl bg-white shadow-sm ring-1 ring-black/5" />
+            <div className="h-24 rounded-xl bg-white dark:bg-shopfront shadow-sm ring-1 ring-black/5 dark:ring-white/5" />
+            <div className="h-24 rounded-xl bg-white dark:bg-shopfront shadow-sm ring-1 ring-black/5 dark:ring-white/5" />
           </div>
-          <div className="h-40 rounded-xl bg-white shadow-sm ring-1 ring-black/5" />
+          <div className="h-40 rounded-xl bg-white dark:bg-shopfront shadow-sm ring-1 ring-black/5 dark:ring-white/5" />
         </div>
         
         {/* Floating AI Sidebar */}
-        <div className="relative flex w-[220px] flex-col rounded-xl bg-white shadow-lg ring-1 ring-black/5 overflow-hidden">
-          <div className="flex items-center gap-2 border-b border-black/5 bg-shopfront px-3 py-3 text-paper">
+        <div className="relative flex w-[220px] flex-col rounded-xl bg-white dark:bg-shopfront shadow-lg ring-1 ring-black/5 dark:ring-white/5 overflow-hidden">
+          <div className="flex items-center gap-2 border-b border-black/5 dark:border-white/5 bg-shopfront px-3 py-3 text-paper">
              <span className="grid h-6 w-6 place-items-center rounded bg-leaf text-xs font-bold text-white">दु</span>
              <span className="text-xs font-medium tracking-wide">Dukaan Saathi AI</span>
           </div>

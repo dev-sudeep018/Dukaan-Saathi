@@ -14,7 +14,7 @@ export default function DashboardToggle() {
   return (
     <Section id="dashboard" className="pt-0">
       <Reveal>
-        <div className="mx-auto max-w-3xl rounded-3xl border border-shopfront/10 bg-white/70 p-6 text-center shadow-[var(--shadow-card)] sm:p-8">
+        <div className="mx-auto max-w-3xl rounded-3xl border border-shopfront/10 bg-white dark:bg-shopfront/70 p-6 text-center shadow-[var(--shadow-card)] sm:p-8">
           <p className="font-body text-sm text-ink/60">{t("dashToggle.prompt")}</p>
           <div className="mt-4 flex flex-wrap justify-center gap-3">
             <button
@@ -63,7 +63,7 @@ function DashCard({ icon: Icon, label, value, foot, tone }) {
     marigold: "text-marigold bg-marigold/15",
   };
   return (
-    <div className="rounded-2xl bg-paper p-5 ring-1 ring-black/5">
+    <div className="rounded-2xl bg-paper p-5 ring-1 ring-black/5 dark:ring-white/5">
       <div className={`inline-grid h-9 w-9 place-items-center rounded-lg ${toneMap[tone]}`}>
         <Icon className="h-4 w-4" />
       </div>
