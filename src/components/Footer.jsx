@@ -1,4 +1,5 @@
 import { useTranslation } from "react-i18next";
+import { Trophy } from "lucide-react";
 
 export default function Footer() {
   const { t } = useTranslation();

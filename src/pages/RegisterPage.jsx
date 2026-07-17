@@ -23,7 +23,6 @@ export default function RegisterPage() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
 
   const [googleAuthData, setGoogleAuthData] = useState(null);
   const [googleShopName, setGoogleShopName] = useState("");

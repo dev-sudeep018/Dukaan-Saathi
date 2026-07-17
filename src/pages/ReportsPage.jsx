@@ -125,7 +125,7 @@ export default function ReportsPage() {
     };
 
     return summaries[activeReport] || summaries.sales;
-  }, [activeReport, data, money, s]);
+  }, [activeReport, data, money]);
 
   const exportReport = (format) => {
     const headers = Object.keys(report.rows[0] || {}).join(format === "excel" ? "\t" : ",");
