@@ -11,7 +11,6 @@
     "test:pipeline": "node scripts/test-pipeline.js"
   },
   "dependencies": {
-    "@anthropic-ai/sdk": "^0.68.0",
     "@libsql/client": "^0.15.15",
     "bcryptjs": "^3.0.2",
     "cors": "^2.8.5",
@@ -19,6 +18,7 @@
     "express": "^5.1.0",
     "google-auth-library": "^10.9.0",
     "jsonwebtoken": "^9.0.2",
-    "multer": "^2.0.2"
+    "multer": "^2.0.2",
+    "openai": "^4.104.0"
   }
 }

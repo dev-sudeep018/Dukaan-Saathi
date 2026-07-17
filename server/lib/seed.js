@@ -77,6 +77,9 @@ export async function seedDemoData(shopId) {
 
   const stmts = [];
 
+  // Track udhaar balances per customer so repayments match real credit given
+  const udhaarBalances = new Map();
+
   // Generate around ~₹12,500 sales for today and realistic history
   // For 7 days
   for (let daysAgo = 6; daysAgo >= 0; daysAgo--) {
@@ -92,35 +95,62 @@ export async function seedDemoData(shopId) {
       const onCredit = rng() < 0.2; // 20% sales on credit
       const cust = onCredit ? customers[pick(customerIds)] : null;
       
+      if (onCredit && cust) {
+        udhaarBalances.set(cust, (udhaarBalances.get(cust) || 0) + amount);
+      }
+
+      // Build a proper UTC timestamp: create date in local time, toISOString converts to UTC
+      // This way date(created_at, 'localtime') correctly maps sales to their intended day
       const hour = 8 + Math.floor(rng() * 12); 
       const min = Math.floor(rng() * 60);
-      const ts = `datetime(date('now','localtime','-${daysAgo} days'),'+${hour} hours','+${min} minutes')`;
+      const saleDate = new Date();
+      saleDate.setDate(saleDate.getDate() - daysAgo);
+      saleDate.setHours(hour, min, Math.floor(rng() * 60), 0);
+      const timestamp = saleDate.toISOString().replace('T', ' ').substring(0, 19);
       
       stmts.push({
-        sql: `INSERT INTO sales (shop_id, product_id, item_text, qty, unit_price, amount, cost_amount, payment_type, customer_id, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ${ts})`,
-        args: [shopId, prod.id, prod.name, qty, prod.sell, amount, cost, onCredit ? "udhaar" : "cash", cust],
+        sql: `INSERT INTO sales (shop_id, product_id, item_text, qty, unit_price, amount, cost_amount, payment_type, customer_id, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        args: [shopId, prod.id, prod.name, qty, prod.sell, amount, cost, onCredit ? "udhaar" : "cash", cust, timestamp],
       });
     }
   }
 
-  // A few partial repayments
-  for (let i=0; i<10; i++) {
-     const ts = `datetime(date('now','localtime','-${Math.floor(rng()*5)} days'),'+12 hours')`;
+  // A few partial repayments — only for customers who actually have udhaar
+  const udhaarCustomers = [...udhaarBalances.entries()]
+    .filter(([_, bal]) => bal > 0)
+    .sort(() => rng() - 0.5); // Shuffle
+  const repaymentCount = Math.min(10, udhaarCustomers.length);
+  for (let i = 0; i < repaymentCount; i++) {
+     const [cid, owed] = udhaarCustomers[i];
+     const maxPay = Math.min(owed, 500);
+     const payAmount = 50 + Math.floor(rng() * Math.max(1, maxPay - 50));
+     const payDate = new Date();
+     payDate.setDate(payDate.getDate() - Math.floor(rng() * 5));
+     payDate.setHours(12, Math.floor(rng() * 60), 0, 0);
+     const payTs = payDate.toISOString().replace('T', ' ').substring(0, 19);
      stmts.push({
-      sql: `INSERT INTO payments (shop_id, customer_id, amount, created_at) VALUES (?, ?, ?, ${ts})`,
-      args: [shopId, customers[pick(customerIds)], 200 + Math.floor(rng() * 500)],
+      sql: `INSERT INTO payments (shop_id, customer_id, amount, created_at) VALUES (?, ?, ?, ?)`,
+      args: [shopId, cid, payAmount, payTs],
     });
   }
 
-  // Everyday expenses across the week
-  const expenseCats = ["rent", "electricity", "transport", "tea", "packaging"];
+  // Everyday expenses across the week — multiple per day for realism
+  const expenseCats = ["rent", "electricity", "transport", "tea", "packaging", "misc"];
   for (let daysAgo = 6; daysAgo >= 0; daysAgo--) {
+    // 2-4 expenses per day
+    const expCount = 2 + Math.floor(rng() * 3);
+    for (let e = 0; e < expCount; e++) {
       const cat = pick(expenseCats);
-      const amt = 50 + Math.floor(rng() * 200);
+      const amt = 20 + Math.floor(rng() * 300);
+      const expDate = new Date();
+      expDate.setDate(expDate.getDate() - daysAgo);
+      expDate.setHours(9 + Math.floor(rng() * 12), Math.floor(rng() * 60), 0, 0);
+      const expTs = expDate.toISOString().replace('T', ' ').substring(0, 19);
       stmts.push({
-        sql: `INSERT INTO expenses (shop_id, category, note, amount, created_at) VALUES (?, ?, ?, ?, datetime('now','localtime','-${daysAgo} days'))`,
-        args: [shopId, cat, "Routine expense", amt],
+        sql: `INSERT INTO expenses (shop_id, category, note, amount, created_at) VALUES (?, ?, ?, ?, ?)`,
+        args: [shopId, cat, "Routine expense", amt, expTs],
       });
+    }
   }
 
   await db.batch(stmts);

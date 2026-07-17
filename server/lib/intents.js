@@ -151,6 +151,11 @@ async function logSale(p, shopId) {
   let amount = p.amount;
   let unitPrice = p.unit_price;
 
+  // Resolve unitPrice BEFORE findOrCreateProduct so sellPrice gets the unit price,
+  // not the total amount (avoids inflating cost_price for new products by qty factor)
+  if (unitPrice == null && amount != null) unitPrice = amount / qty;
+  if (amount == null && unitPrice != null) amount = unitPrice * qty;
+
   const product = await findOrCreateProduct(shopId, item, {
     unit: p.unit,
     sellPrice: unitPrice || amount || 0,
@@ -163,8 +168,6 @@ async function logSale(p, shopId) {
     lowStockThreshold: p.low_stock_threshold || 5,
   });
 
-  if (amount == null && unitPrice != null) amount = unitPrice * qty;
-  if (unitPrice == null && amount != null) unitPrice = amount / qty;
   if (amount == null) {
     unitPrice = product.sell_price || 0;
     amount = unitPrice * qty;

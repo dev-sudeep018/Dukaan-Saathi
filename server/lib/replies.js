@@ -236,6 +236,12 @@ const T = {
       "🤔 నాకు సరిగ్గా అర్థం కాలేదు. ఇలా చెప్పండి: \"2 కిలో చక్కెర 90 రూపాయలు నగదు\", \"రమేష్ 200 చెల్లించారు\", లేదా \"ఈ రోజు లాభం?\"",
   },
 
+  chat: {
+    en: () => "",
+    hi: () => "",
+    te: () => "",
+  },
+
   voice_disabled: {
     en: () =>
       "🎙️ Voice notes aren't enabled yet (Sarvam key not set). Please type your message for now.",

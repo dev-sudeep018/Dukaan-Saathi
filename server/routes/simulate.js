@@ -70,7 +70,7 @@ simulateRouter.post("/voice", upload.single("audio"), async (req, res) => {
         intent: "voice_disabled",
         language: shop.lang_pref || "en",
         transcript: "",
-        aiMode: flags.hasClaude ? "live" : "demo",
+        aiMode: flags.hasNvidia ? "live" : "demo",
       });
     }
     if (!req.file) return res.status(400).json({ error: "No audio uploaded" });
@@ -146,7 +146,7 @@ simulateRouter.post("/scan/apply", async (req, res) => {
       applied++;
     }
     const summary = await todaySummary(shop.id);
-    res.json({ ok: true, applied, summary, aiMode: flags.hasClaude ? "live" : "demo" });
+    res.json({ ok: true, applied, summary, aiMode: flags.hasNvidia ? "live" : "demo" });
   } catch (err) {
     console.error("[ai/scan/apply]", err.message);
     res.status(500).json({ error: "Could not save the scanned entries" });

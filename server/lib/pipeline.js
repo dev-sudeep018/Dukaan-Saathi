@@ -12,7 +12,7 @@ const COACHABLE = { day_report: "day_report", query_profit: "profit" };
 /* Whether the live LLM is answering, or the offline rule-based fallback.
    Surfaced to the UI so it can show an honest "Live AI" / "Demo AI Mode" badge
    rather than silently pretending the regex parser is the AI. */
-const aiMode = () => (flags.hasClaude ? "live" : "demo");
+const aiMode = () => (flags.hasNvidia ? "live" : "demo");
 
 /* The heart of Dukaan Saathi — turns a natural-language message into a ledger
    update + a reply. `text` is the final text (already transcribed if it came
@@ -38,6 +38,13 @@ export async function handleMessage({ shop, text, channel = "ai", transcript = n
 
   // log inbound
   await logMessage(shop.id, "in", channel, content, transcript, lang, parsed.intent, parsed);
+
+  // Chat-only responses (casual conversation, no shop action) bypass intent execution
+  if (parsed.intent === "chat") {
+    const reply = parsed._reply || compose("not_understood", lang, {});
+    await logMessage(shop.id, "out", channel, reply, null, lang, "chat", parsed);
+    return { reply, intent: "chat", language: lang, parsed, result: null, transcript, aiMode: aiMode() };
+  }
 
   let result;
   try {

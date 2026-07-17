@@ -17,7 +17,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
 app.get("/api/health", (_req, res) =>
-  res.json({ ok: true, integrations: flags, aiMode: flags.hasClaude ? "live" : "demo" }),
+  res.json({ ok: true, integrations: flags, aiMode: flags.hasNvidia ? "live" : "demo" }),
 );
 
 app.use("/api/auth", authRouter);

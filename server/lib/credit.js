@@ -2,7 +2,7 @@ import { db } from '../db.js';
 import { publishNotification } from './notifications.js';
 
 function normalizeStatus({ dueDate, totalAmount, paidAmount }) {
-  const due = new Date(dueDate);
+  const due = new Date(dueDate + 'T23:59:59');
   const now = new Date();
   if (Number(paidAmount) >= Number(totalAmount)) return 'Paid';
   if (due < now) return 'Overdue';
@@ -98,7 +98,7 @@ export async function markInvoicePaid(id, amount = 0) {
   const invoice = await getCreditInvoice(id);
   if (!invoice) return null;
 
-  const paidAmount = Number(invoice.paid_amount || 0) + Number(amount || invoice.total_amount || 0);
+  const paidAmount = Number(invoice.paid_amount ?? 0) + Number(amount ?? invoice.total_amount ?? 0);
   const totalAmount = Number(invoice.total_amount || 0);
   const status = normalizeStatus({ dueDate: invoice.due_date, totalAmount, paidAmount });
 

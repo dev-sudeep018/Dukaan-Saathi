@@ -5,7 +5,7 @@ export default function MorningBrief({ data, t, money }) {
   if (!data?.health) return null;
   const { score, greeting, insight, nextGoal, todaysGoal } = data.health;
   
-  const todayRevenue = data?.summary?.moneyReceived || 0;
+  const todayRevenue = data?.summary?.revenue || 0;
   const progress = todaysGoal > 0 ? Math.min(100, Math.round((todayRevenue / todaysGoal) * 100)) : 0;
 
   return (

@@ -47,7 +47,7 @@ export async function monthlySales(shopId) {
     .prepare(
       `SELECT COALESCE(SUM(amount), 0) AS amount, COUNT(*) AS orders
        FROM sales
-       WHERE shop_id = ? AND created_at >= datetime('now', 'start of month')`,
+       WHERE shop_id = ? AND date(created_at, 'localtime') >= date('now', 'localtime', 'start of month')`,
     )
     .get(shopId);
   return {
@@ -116,7 +116,7 @@ export async function upcomingDueDates(shopId) {
     .prepare(
       `SELECT id, invoice_number, due_date, total_amount, paid_amount, status
        FROM credit_invoices
-       WHERE (seller_shop_id = ? OR buyer_shop_id = ?) AND status NOT IN ('Paid', 'closed')
+        WHERE (seller_shop_id = ? OR buyer_shop_id = ?) AND LOWER(status) NOT IN ('paid', 'closed')
        ORDER BY due_date ASC, created_at DESC`,
     )
     .all(shopId, shopId);
@@ -291,7 +291,7 @@ export async function todayExpenses(shopId) {
        FROM expenses WHERE shop_id = ? AND ${TODAY} ORDER BY created_at DESC`,
     )
     .all(shopId);
-  return { total: items.reduce((s, r) => s + r.amount, 0), items };
+  return { total: items.reduce((s, r) => s + Number(r.amount || 0), 0), items };
 }
 
 /* Undo the single most recent entry (sale, expense or payment) for a shop.

@@ -1,4 +1,4 @@
-import Anthropic from "@anthropic-ai/sdk";
+import OpenAI from "openai";
 import { config, flags } from "../config.js";
 
 /* The structured shape every parse returns. */
@@ -22,66 +22,82 @@ const INTENTS = [
 ];
 
 const EXTRACT_TOOL = {
-  name: "record_shop_action",
-  description:
-    "Extract the shopkeeper's intent and any entities from their message. " +
-    "The message may be in English, Hindi, Hinglish (Roman Hindi) or Telugu.",
-  input_schema: {
-    type: "object",
-    properties: {
-      intent: { type: "string", enum: INTENTS },
-      language: {
-        type: "string",
-        enum: ["en", "hi", "te"],
-        description: "Language the shopkeeper wrote/spoke in.",
+  type: "function",
+  function: {
+    name: "record_shop_action",
+    description:
+      "Extract the shopkeeper's intent and any entities from their message. " +
+      "The message may be in English, Hindi, Hinglish (Roman Hindi) or Telugu.",
+    parameters: {
+      type: "object",
+      properties: {
+        intent: { type: "string", enum: INTENTS },
+        language: {
+          type: "string",
+          enum: ["en", "hi", "te"],
+          description: "Language the shopkeeper wrote/spoke in.",
+        },
+        item: { type: "string", description: "Product name, if any (English or transliterated)." },
+        qty: { type: "number", description: "Quantity, if stated." },
+        unit: { type: "string", description: "Unit like kg, g, l, ml, packet, piece. Default 'unit'." },
+        unit_price: { type: "number", description: "Price per unit, if stated." },
+        amount: { type: "number", description: "Total money amount in rupees, if stated." },
+        party_name: { type: "string", description: "Customer/person name for udhaar or a repayment." },
+        category: { type: "string", description: "For record_expense: what the money was spent on, e.g. rent, transport, electricity, tea, supplies." },
+        payment_type: {
+          type: "string",
+          enum: ["cash", "udhaar"],
+          description: "cash if paid now; udhaar if on credit/borrowed.",
+        },
+        confidence: { type: "number", description: "0 to 1 confidence in this parse." },
       },
-      item: { type: "string", description: "Product name, if any (English or transliterated)." },
-      qty: { type: "number", description: "Quantity, if stated." },
-      unit: { type: "string", description: "Unit like kg, g, l, ml, packet, piece. Default 'unit'." },
-      unit_price: { type: "number", description: "Price per unit, if stated." },
-      amount: { type: "number", description: "Total money amount in rupees, if stated." },
-      party_name: { type: "string", description: "Customer/person name for udhaar or a repayment." },
-      category: { type: "string", description: "For record_expense: what the money was spent on, e.g. rent, transport, electricity, tea, supplies." },
-      payment_type: {
-        type: "string",
-        enum: ["cash", "udhaar"],
-        description: "cash if paid now; udhaar if on credit/borrowed.",
-      },
-      confidence: { type: "number", description: "0 to 1 confidence in this parse." },
+      required: ["intent", "language"],
     },
-    required: ["intent", "language"],
   },
 };
 
-const SYSTEM = `You are the parsing brain of "Dukaan Saathi", an AI business partner for small Indian kirana shop owners.
+const SYSTEM = `You are "Dukaan Saathi", an AI business partner for small Indian kirana shop owners.
 Shopkeepers message you in English, Hindi, Hinglish (Hindi in Roman letters) or Telugu, by text or transcribed voice.
-Extract exactly one intent plus entities and call the tool.
 
-Guidance:
+You have TWO modes — decide which one to use based on the message:
+
+MODE 1 — SHOP ACTION: If the user is recording a sale, expense, payment, restock, checking reports/profit/dues/stock, or asking about their shop data, use the record_shop_action tool to extract the structured intent.
+
+MODE 2 — CONVERSATION: If the user is greeting you, asking a general question (about business tips, advice, how things work, or anything NOT about their shop's current data), just reply naturally in a friendly, helpful way as a trusted shop advisor. Do NOT call any tool.
+
+Guidance for Mode 1 (use the tool):
 - "2 kg rice 100 rupees cash" / "2 किलो चावल 100 रुपये" / "2 కిలో బియ్యం 100 రూపాయలు" => log_sale, qty 2, unit kg, item rice, amount 100, payment_type cash.
 - If a person's name + "udhaar/उधार/ఉధార్/credit/baaki" appears with a sale => log_sale with payment_type udhaar and party_name.
 - "<name> paid 200" / "रमेश ने 200 दिए" / "రమేష్ 200 చెల్లించారు" => record_payment, party_name, amount.
 - "10 kg sugar aaya/restock/bought/kharida" => restock.
-- A cost the shop PAID OUT that is not stock — rent, electricity, transport, tea, salary, misc — e.g. "rent 5000 / bijli bill 800 / chai 40 kharch / bhada 200 / అద్దె 5000 ఖర్చు" => record_expense with amount and a short category. (Buying stock to sell is restock, NOT an expense.)
-- Questions like "today's profit / aaj ka munafa / ఈ రోజు లాభం" => query_profit.
+- A cost the shop PAID OUT that is not stock — rent, electricity, transport, tea, salary, misc => record_expense with amount and a short category. (Buying stock to sell is restock, NOT an expense.)
+- Questions about TODAY'S DATA like "today's profit / aaj ka munafa / ఈ రోజు లాభం" => query_profit.
 - "how much money came today / kitne paise aaye / ఈ రోజు ఎంత డబ్బు" => query_money_today.
 - "how much did I spend today / aaj kitna kharch hua / ఈ రోజు ఎంత ఖర్చు" => query_expenses.
-- "who owes me / kaun kaun ka udhaar / ఎవరు బాకీ" => query_dues (everyone).
-- Dues for ONE named person: "how much does Ramesh owe / Ramesh ka udhaar kitna / Ramesh kitna baaki / రమేష్ బాకీ ఎంత" => query_customer_dues with party_name set to that person.
+- "who owes me / kaun kaun ka udhaar / ఎవరు బాకీ" => query_dues.
+- Dues for ONE named person => query_customer_dues with party_name.
 - "what's low / kya khatam / తక్కువగా ఏమి ఉంది" => query_stock.
 - "today's sales / aaj ki bikri" => query_sales.
-- A full end-of-day summary: "day report / aaj ka hisab / poora hisab / ఈ రోజు హిసాబు / రిపోర్ట్" => day_report.
-- Cancel/undo the last thing entered: "undo / galti / galat / cancel / mistake / రద్దు / గల్తీ" => undo_last.
-- Greetings/help => help. If unclear => unknown.
-Always set language to what the user actually used. Normalize item names to a simple lowercase noun. Infer amount = qty*unit_price when only per-unit price is given.`;
+- "day report / aaj ka hisab / poora hisab / ఈ రోజు హిసాబు" => day_report.
+- "undo / galti / galat / cancel / mistake / రద్దు / గల్తీ" => undo_last.
+
+Guidance for Mode 2 (just reply with text, no tool):
+- Greetings like "hi", "hello", "namaste", "good morning" — respond warmly.
+- General business questions like "how can I increase sales?", "tips for my shop", "what should I stock?" — give friendly advice.
+- Questions about the app like "how does this work?", "what can you do?" — explain your features.
+- Any chit-chat, jokes, or general conversation — be helpful and friendly.
+- If unsure whether it's a shop action or conversation, ask for clarification.
+
+Always respond in the same language the user used. Be warm and practical, like a trusted shop assistant.`;
 
 let client = null;
 function getClient() {
   if (!client)
-    client = new Anthropic({
-      apiKey: config.anthropic.apiKey,
-      timeout: 8000, // fail fast (8s) to the mock parser instead of stalling a message
-      maxRetries: 1, // one quick retry; the catch below degrades to mockParse
+    client = new OpenAI({
+      baseURL: config.nvidia.baseUrl,
+      apiKey: config.nvidia.apiKey,
+      timeout: 8000,
+      maxRetries: 1,
     });
   return client;
 }
@@ -90,22 +106,30 @@ export async function parse(text, shopContext = {}) {
   const clean = (text || "").trim();
   if (!clean) return { intent: "unknown", language: shopContext.lang || "en", confidence: 0 };
 
-  if (!flags.hasClaude) return mockParse(clean, shopContext);
+  if (!flags.hasNvidia) return mockParse(clean, shopContext);
 
   try {
-    const msg = await getClient().messages.create({
-      model: config.anthropic.model,
+    const msg = await getClient().chat.completions.create({
+      model: config.nvidia.model,
       max_tokens: 400,
-      system: SYSTEM,
+      temperature: config.nvidia.temperature,
+      top_p: config.nvidia.topP,
       tools: [EXTRACT_TOOL],
-      tool_choice: { type: "tool", name: EXTRACT_TOOL.name },
-      messages: [{ role: "user", content: clean }],
+      tool_choice: "auto",
+      messages: [
+        { role: "system", content: SYSTEM },
+        { role: "user", content: clean },
+      ],
+      ...config.nvidia.extraBody,
     });
-    const block = msg.content.find((b) => b.type === "tool_use");
-    if (!block) return mockParse(clean, shopContext);
-    return normalizeParsed(block.input, clean, shopContext);
+    const toolCall = msg.choices[0]?.message?.tool_calls?.[0];
+    if (!toolCall) {
+      const text = msg.choices[0]?.message?.content || "";
+      return { intent: "chat", language: detectLang(clean), _raw: clean, _reply: text, confidence: 0.9 };
+    }
+    return normalizeParsed(JSON.parse(toolCall.function.arguments), clean, shopContext);
   } catch (err) {
-    console.error("[parser] Claude call failed, using mock:", err.message);
+    console.error("[parser] NVIDIA NIM call failed, using mock:", err.message);
     return mockParse(clean, shopContext);
   }
 }
@@ -136,7 +160,7 @@ export function detectLang(text) {
   return "en";
 }
 
-/* ---- Rule-based fallback parser (runs when no Anthropic key) -------------- */
+/* ---- Rule-based fallback parser (runs when no NVIDIA NIM key) -------------- */
 const KW = {
   profit: ["profit", "munafa", "munaafa", "faayda", "fayda", "मुनाफ़ा", "मुनाफा", "फायदा", "లాభం", "లాభo"],
   money: ["money", "paise", "paisa", "collection", "kitna aaya", "kitne aaye", "पैसे", "पैसा", "కलెక्షन్", "డబ్బు", "సొమ్ము"],

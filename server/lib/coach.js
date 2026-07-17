@@ -1,4 +1,4 @@
-import Anthropic from "@anthropic-ai/sdk";
+import OpenAI from "openai";
 import { config, flags } from "../config.js";
 
 /* The "advisor" half of the hybrid reply strategy.
@@ -14,7 +14,12 @@ import { config, flags } from "../config.js";
    today's data / likely", one or two sentences, warm and practical. */
 
 const client = () =>
-  new Anthropic({ apiKey: config.anthropic.apiKey, timeout: 6000, maxRetries: 0 });
+  new OpenAI({
+    baseURL: config.nvidia.baseUrl,
+    apiKey: config.nvidia.apiKey,
+    timeout: 6000,
+    maxRetries: 0,
+  });
 
 const LANG_NAME = { en: "English", hi: "Hindi", te: "Telugu" };
 
@@ -29,13 +34,15 @@ Rules:
 
 /* Returns a short grounded insight string, or "" when unavailable. */
 export async function coachInsight(kind, data, lang = "en") {
-  if (!flags.hasClaude) return "";
+  if (!flags.hasNvidia) return "";
   try {
-    const msg = await client().messages.create({
-      model: config.anthropic.model,
+    const msg = await client().chat.completions.create({
+      model: config.nvidia.model,
       max_tokens: 160,
-      system: SYSTEM,
+      temperature: config.nvidia.temperature,
+      top_p: config.nvidia.topP,
       messages: [
+        { role: "system", content: SYSTEM },
         {
           role: "user",
           content:
@@ -45,12 +52,9 @@ export async function coachInsight(kind, data, lang = "en") {
             `Give one short, grounded insight for the shopkeeper.`,
         },
       ],
+      ...config.nvidia.extraBody,
     });
-    const text = (msg.content || [])
-      .filter((b) => b.type === "text")
-      .map((b) => b.text)
-      .join(" ")
-      .trim();
+    const text = (msg.choices[0]?.message?.content || "").trim();
     return text;
   } catch (err) {
     console.error("[coach] insight failed, skipping:", err.message);

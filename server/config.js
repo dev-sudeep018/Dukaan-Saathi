@@ -6,19 +6,24 @@ export const config = {
   port: Number(process.env.PORT) || 3001,
   jwtSecret: process.env.JWT_SECRET || "dev-insecure-secret-change-me",
 
-  anthropic: {
-    apiKey: process.env.ANTHROPIC_API_KEY || "",
-    // Model is configuration, never hard-coded logic. Override with CLAUDE_MODEL
-    // to move to a newer model without a code change. The default is a real,
-    // currently-supported Anthropic model id.
-    model: process.env.CLAUDE_MODEL || "claude-sonnet-4-6",
+  nvidia: {
+    apiKey: process.env.NVIDIA_API_KEY || "",
+    baseUrl: process.env.NVIDIA_BASE_URL || "https://integrate.api.nvidia.com/v1",
+    model: process.env.NVIDIA_MODEL || "nvidia/nemotron-3-ultra-550b-a55b",
+    temperature: Number(process.env.NVIDIA_TEMPERATURE) || 1,
+    topP: Number(process.env.NVIDIA_TOP_P) || 0.95,
+    maxTokens: Number(process.env.NVIDIA_MAX_TOKENS) || 16384,
+    extraBody: {
+      chat_template_kwargs: { enable_thinking: true },
+      reasoning_budget: Number(process.env.NVIDIA_REASONING_BUDGET) || 16384,
+    },
   },
 
   // Turso / libSQL. When the URL is unset we fall back to a local SQLite file
   // (see db.js) so local dev needs no cloud account.
   turso: {
-    url: process.env.TURSO_DATABASE_URL || "",
-    authToken: process.env.TURSO_AUTH_TOKEN || "",
+    url: process.env.TURSO_DATABASE_URL || "libsql://dukaan-saathi-praju.aws-ap-south-1.turso.io",
+    authToken: process.env.TURSO_AUTH_TOKEN || "eyJhbGciOiJFZERTQSIsInR5cCI6IkpXVCJ9.eyJhIjoicnciLCJpYXQiOjE3ODQyNjQ4NDYsImlkIjoiMDE5ZjQwZGMtMTEwMS03NWU5LTg3YjItM2M2MTI5YTE0NTAyIiwia2lkIjoiVXY4WkFjQjVjSkRWRmVfSFdpVkVBb19hckx0MWZKYkJQOThvd1l0V3ZxWSIsInJpZCI6IjEyYjhhM2JhLTFkNDEtNDMyYS04NmRmLTNlOWIxZjdmOWEwYiJ9.XmlupphBXBcNG4_3FUyS5rkszA6XatN2qr9xsqBU3nwGVxuUM2_rsVUZS1ck0KOzJ4meM7UqRqC0q7F3QPetDg",
   },
 
   sarvam: {
@@ -33,38 +38,33 @@ export const config = {
   },
 };
 
-/* A usable Anthropic key is a real API key ("sk-ant-api…"). OAuth / gateway
-   tokens — e.g. the Claude Code client's "sk-ant-oat…" or "fe_oa_…" — are
-   rejected by the Messages API with 403, so treat them as "no key" and fall
-   back to the rule-based parser ("Demo AI Mode") instead of failing a call on
-   every message. (If you proxy through a custom gateway, set ANTHROPIC_API_KEY
-   to a real sk-ant-api key or relax this check.) */
-function usableAnthropicKey(key) {
-  return (key || "").startsWith("sk-ant-api");
+/* A usable NVIDIA NIM key starts with "nvapi-". */
+function usableNvidiaKey(key) {
+  return (key || "").startsWith("nvapi-");
 }
 
 export const flags = {
-  hasClaude: usableAnthropicKey(config.anthropic.apiKey),
+  hasNvidia: usableNvidiaKey(config.nvidia.apiKey),
   hasSarvam: Boolean(config.sarvam.apiKey),
 };
 
 /* Human-readable reason the AI is in demo mode, for developer logs only —
    never surfaced to end users (which would leak configuration details). */
 export function aiConfigDiagnostic() {
-  const key = config.anthropic.apiKey;
-  if (!key) return "ANTHROPIC_API_KEY not set";
-  if (!usableAnthropicKey(key)) return "ANTHROPIC_API_KEY is not a usable sk-ant-api key (OAuth/gateway tokens are rejected)";
+  const key = config.nvidia.apiKey;
+  if (!key) return "NVIDIA_API_KEY not set";
+  if (!usableNvidiaKey(key)) return "NVIDIA_API_KEY is not a usable nvapi key";
   return null;
 }
 
 export function logStartupFlags() {
   console.log("  Dukaan Saathi backend — integration status:");
   console.log(
-    `   • Dukaan Saathi AI : ${flags.hasClaude ? "LIVE (" + config.anthropic.model + ")" : "DEMO MODE → rule-based parser"}`,
+    `   • Dukaan Saathi AI : ${flags.hasNvidia ? "LIVE (" + config.nvidia.model + ")" : "DEMO MODE → rule-based parser"}`,
   );
-  if (!flags.hasClaude) {
+  if (!flags.hasNvidia) {
     const why = aiConfigDiagnostic();
-    if (why) console.log(`       ↳ reason: ${why}. Set a valid ANTHROPIC_API_KEY to enable live AI.`);
+    if (why) console.log(`       ↳ reason: ${why}. Set a valid NVIDIA_API_KEY to enable live AI.`);
   }
   console.log(
     `   • Sarvam voice     : ${flags.hasSarvam ? "ON" : "OFF → browser speech only"}`,
